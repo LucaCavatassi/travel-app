@@ -39,7 +39,7 @@
             </div>
             <div class="list-col col-12 col-md-2 flex-grow-1">
                 <ul>    
-                    <li v-for="travel in travels"><router-link :to="{ name: 'single-result', params: {slug: travel.title}}">{{ travel.title }} - {{ travel.description }}</router-link></li>
+                    <li v-for="travel in travels"><router-link :to="{ name: 'single-result', params: {slug: travel.slug}}">{{ travel.title }} - {{ travel.description }}</router-link></li>
                 </ul>
             </div>
         </div>
