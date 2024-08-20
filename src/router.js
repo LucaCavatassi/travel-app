@@ -15,7 +15,7 @@ const router = createRouter({
 			props: true,
 		},
 		{
-			path: "/single-result",
+			path: "/travel/:slug",
 			name: "single-result",
 			component: SingleResultPage,
 			props: true,
