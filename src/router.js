@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import SingleResultPage from "./pages/SingleResultPage.vue";
 import LandingPage from "./pages/LandingPage.vue";
+import NewTravelPage from "./pages/NewTravelPage.vue";
 
 
 const router = createRouter({
@@ -11,11 +12,18 @@ const router = createRouter({
 			path: "/",
 			name: "landing-page",
 			component: LandingPage,
+			props: true,
 		},
 		{
 			path: "/single-result",
 			name: "single-result",
 			component: SingleResultPage,
+			props: true,
+		},
+		{
+			path: "/add-new-travel",
+			name: "add-new-travel",
+			component: NewTravelPage,
 			props: true,
 		},
 	],
