@@ -24,8 +24,7 @@ export default {
             try {
                 const response = await axios.get(`http://localhost:8888/api/travel_app_be/db_connect.php?slug=${this.slug}`);
                 this.travel = response.data[0];
-                console.log(this.travel);
-
+                
                 if (this.travel && this.travel.id) {
                     await Promise.all([
                         this.fetchLocations(this.travel.id),
@@ -42,7 +41,7 @@ export default {
             try {
                 const response = await axios.get(`http://localhost:8888/api/travel_app_be/db_connect.php?locations=${travelId}`);
                 this.locations = response.data;
-                console.log(this.locations);
+            
                 
             } catch (error) {
                 console.error('Error fetching locations:', error);
@@ -53,8 +52,7 @@ export default {
             try {
                 const response = await axios.get(`http://localhost:8888/api/travel_app_be/db_connect.php?foods=${travelId}`);
                 this.foods = response.data;
-                console.log(this.foods);
-                
+
             } catch (error) {
                 console.error('Error fetching foods:', error);
             }
@@ -64,7 +62,6 @@ export default {
             try {
                 const response = await axios.get(`http://localhost:8888/api/travel_app_be/db_connect.php?facts=${travelId}`);
                 this.facts = response.data;
-                console.log(this.facts);
                 
             } catch (error) {
                 console.error('Error fetching facts:', error);
