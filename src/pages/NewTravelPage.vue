@@ -1,13 +1,18 @@
 <script>
+import TravelForm from '../components/TravelForm.vue';
+
     export default {
         name: "add-new-travel",
+        components: {
+            TravelForm
+        }
     }
 </script>
 
 <template>
     <div class="container-fluid">
         <div class="row">
-            <h1>New Travel Page</h1>
+            <TravelForm/>
         </div>
     </div>
 </template>

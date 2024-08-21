@@ -47,9 +47,11 @@
             <div class="col-12 col-md-8 px-0">
                 <MapboxMapComponent :locations="locations" />
             </div>
-            <div class="list-col col-12 col-md-2 flex-grow-1 h-100">
-                <ul>    
-                    <li v-for="travel in travels"><router-link :to="{ name: 'single-result', params: {slug: travel.slug}}">{{ travel.title }} - {{ travel.description }}</router-link></li>
+            <div class="list-col col-12 col-md-2 flex-grow-1 h-100 p-3">
+                <h3>All my travels</h3>
+                <ul class="px-0 py-2">    
+                    <li class="mb-3 p-3" v-for="travel in travels"><router-link :to="{ name: 'single-result', params: {slug: travel.slug}}">{{ travel.title }}
+                        </router-link><br> {{ travel.description }}</li>
                 </ul>
             </div>
         </div>
@@ -64,5 +66,10 @@
     .list-col{
         height: calc(100% - $header-height - $footer-height);
         overflow-y: auto;
+        li {
+            list-style-type: none;
+            border: 1px solid black;
+            border-radius: 15px;
+        }
     }
 </style>
