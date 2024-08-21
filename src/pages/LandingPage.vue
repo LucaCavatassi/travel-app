@@ -1,31 +1,41 @@
 <script>
     import axios from "axios";
+    import MapboxMapComponent from '../components/MapboxMapComponent.vue';
 
     export default {
         name: "landing-page",
-
+        components: {
+            MapboxMapComponent,
+        },
         data() {
             return {
                 travels: [],
+                locations: []
             };
         },
 
         mounted() {
             this.fetchTravels();
+            this.fetchLocations();
         },
 
         methods: {
-            fetchTravels() {
-                axios.get('http://localhost:8888/api/travel_app_be/db_connect.php')
-                    .then(response => {
-                        this.travels = response.data;
-                        console.log(this.travels);
-                        
-                    })
-                    .catch(error => {
-                        console.error('There was an error fetching the travels!', error);
-                });
-            }
+            async fetchTravels() {
+                try {
+                    const response = await axios.get('http://localhost:8888/api/travel_app_be/db_connect.php');
+                    this.travels = response.data;
+                } catch (error) {
+                    console.error('Error fetching travels:', error);
+                }
+            },
+            async fetchLocations() {
+                try {
+                    const response = await axios.get('http://localhost:8888/api/travel_app_be/db_connect.php?locations=all');
+                    this.locations = response.data;
+                } catch (error) {
+                    console.error('Error fetching locations:', error);
+                }
+            },
         }
 
     }
@@ -34,10 +44,10 @@
 <template>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12 col-md-8">
-                <h1>Map</h1>
+            <div class="col-12 col-md-8 px-0">
+                <MapboxMapComponent :locations="locations" />
             </div>
-            <div class="list-col col-12 col-md-2 flex-grow-1">
+            <div class="list-col col-12 col-md-2 flex-grow-1 h-100">
                 <ul>    
                     <li v-for="travel in travels"><router-link :to="{ name: 'single-result', params: {slug: travel.slug}}">{{ travel.title }} - {{ travel.description }}</router-link></li>
                 </ul>
