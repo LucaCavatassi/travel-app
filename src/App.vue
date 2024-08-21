@@ -13,7 +13,7 @@ export default {
 <template>
   <AppHeader/>
   <router-view></router-view>
-  <AppFooter/>
+  <!-- <AppFooter/> -->
 </template>
 
 <style scoped lang="scss">
