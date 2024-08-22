@@ -25,8 +25,10 @@
             <!-- Locations -->
             <div v-for="(location, index) in travel.locations" :key="index" class="mb-3">
                 <label :for="'location' + index" class="form-label">Location Name:</label>
+                
                 <div :id="'location' + index" class="input-container">
-                    <input v-model="location.name" class="form-control" required />
+                    <AddressInput v-model="location.name"/>
+                    <!-- <input v-model="location.name" class="form-control" required /> -->
                 </div>
                 <div class="invalid-feedback">Please provide a location.</div>
 
@@ -90,6 +92,7 @@
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+import AddressInput from './AddressInput.vue';
 
 export default {
     data() {
@@ -105,6 +108,9 @@ export default {
             },
             mapboxToken: 'pk.eyJ1IjoibHVjYW1hcmlhY2F2YXRhc3NpIiwiYSI6ImNtMDNpZjlncDBid3oyaXFscGh5ODk5YWkifQ.w7Bhbf-lZDgIxyvCmGfT1A', // Replace with your Mapbox token
         };
+    },
+    components: {
+        AddressInput
     },
     methods: {
         initializeGeocoder() {
