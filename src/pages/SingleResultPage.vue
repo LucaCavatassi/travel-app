@@ -84,7 +84,6 @@ export default {
                 <ul v-if="locations.length">
                     <li v-for="location in locations" :key="location.id">
                         <p>{{ location.name }}</p>
-                        <p>Lat: {{ location.lat }}, Long: {{ location.long }}</p>
                         <p>Rating: {{ location.rating }}</p>
                         <p>Done: {{ location.is_done ? 'Yes' : 'No' }}</p>
                     </li>
