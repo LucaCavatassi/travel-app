@@ -73,13 +73,16 @@ export default {
 
 <template>
     <div class="container-fluid">
+        <div id="alertContainer"></div>
         <div class="row">
+
             <div class="col">
                 <h1>{{ travel.title }}</h1>
                 <p>{{ travel.date }}</p>
                 <p>{{ travel.description }}</p>
                 <p>{{ travel.notes }}</p>
 
+                <router-link :to="{ name: 'edit-form', params: {slug: travel.slug}}">Edit form</router-link>
                 <h2>Locations</h2>
                 <ul v-if="locations.length">
                     <li v-for="location in locations" :key="location.id">

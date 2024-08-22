@@ -91,7 +91,7 @@
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
-import AddressInput from './AddressInput.vue';
+import AddressInput from '../components/AddressInput.vue';
 
 export default {
     data() {
@@ -111,7 +111,65 @@ export default {
     components: {
         AddressInput
     },
+    created() {
+        this.fetchTravelDetail(); 
+    },
     methods: {
+        async fetchTravelDetail() {
+            try {
+                const slug = this.$route.params.slug;
+                
+                const response = await axios.get(`http://localhost:8888/api/travel_app_be/db_connect.php?slug=${slug}`);
+                console.log(response.data[0]);
+                
+                this.travel = response.data[0];
+                // console.log(this.travel.id);
+                
+                
+                if (this.travel && this.travel.id) {
+                    await Promise.all([
+                        this.fetchLocations(this.travel.id),
+                        this.fetchFoods(this.travel.id),
+                        this.fetchFacts(this.travel.id)
+                    ]);
+                }
+            } catch (error) {
+                console.error('There was an error fetching the travel details!', error);
+            }
+        },
+
+        async fetchLocations(travelId) {
+            try {
+                const response = await axios.get(`http://localhost:8888/api/travel_app_be/db_connect.php?locations=${travelId}`);
+                this.travel.locations = response.data;
+                // console.log(this.locations);
+                
+            
+                
+            } catch (error) {
+                console.error('Error fetching locations:', error);
+            }
+        },
+
+        async fetchFoods(travelId) {
+            try {
+                const response = await axios.get(`http://localhost:8888/api/travel_app_be/db_connect.php?foods=${travelId}`);
+                this.travel.foods = response.data;
+
+            } catch (error) {
+                console.error('Error fetching foods:', error);
+            }
+        },
+
+        async fetchFacts(travelId) {
+            try {
+                const response = await axios.get(`http://localhost:8888/api/travel_app_be/db_connect.php?facts=${travelId}`);
+                this.travel.facts = response.data;
+                
+            } catch (error) {
+                console.error('Error fetching facts:', error);
+            }
+        },
         initializeGeocoder() {
             // Initialize the Mapbox Geocoder
             mapboxgl.accessToken = this.mapboxToken;
@@ -146,40 +204,41 @@ export default {
             }
         },
         async submitTravel() {
-            const geocodePromises = this.travel.locations.map((location, index) => this.geocodeLocation(location, index));
-            await Promise.all(geocodePromises);
+    try {
+        // Add ID to the payload
+        const payload = { ...this.travel, id: this.travel.id };
 
-            if (this.validateForm()) {
-                axios.post('http://127.0.0.1:8888/api/travel_app_be/db_connect.php', this.travel)
-                    .then(response => {
-                        // Display success alert
-                        const alertContainer = document.getElementById('alertContainer');
-                        alertContainer.innerHTML = `
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        Travel plan submitted successfully!
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>`;
-
-                        // Log response
-                        console.log(response.data);
-
-                        // Clear the form fields
-                        this.clearForm();
-                    })
-                    .catch(error => {
-                        // Display error alert
-                        const alertContainer = document.getElementById('alertContainer');
-                        alertContainer.innerHTML = `
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        An error occurred while submitting the travel plan.
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>`;
-
-                        // Log the error
-                        console.error('API Error:', error.response ? error.response.data : error);
-                    });
+        // Send a PUT request to update the travel record
+        const response = await axios.put(`http://localhost:8888/api/travel_app_be/db_connect.php`, new URLSearchParams(payload).toString(), {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
             }
-        },
+        });
+
+        console.log('Response:', response.data);
+
+        // Display success alert
+        const alertContainer = document.getElementById('alertContainer');
+        alertContainer.innerHTML = `
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                Travel plan updated successfully!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>`;
+
+        // Optionally navigate back or to another page
+        // this.$router.push({ name: 'single-result', params: { slug: this.travel.slug } });
+    } catch (error) {
+        // Display error alert
+        const alertContainer = document.getElementById('alertContainer');
+        alertContainer.innerHTML = `
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                An error occurred while updating the travel plan.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>`;
+
+        console.error('API Error:', error.response ? error.response.data : error);
+    }
+},
 
         clearForm() {
             // Reset the travel object to its initial state (adjust as needed for your form structure)
