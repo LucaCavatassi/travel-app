@@ -25,7 +25,7 @@ export default {
                 container: mapContainer.value,
                 style: 'mapbox://styles/mapbox/streets-v11',
                 center: [12.4964, 41.9028], // Default center (Rome)
-                zoom: 5,
+                zoom: 3.3,
             });
             
             map.on('load', () => {

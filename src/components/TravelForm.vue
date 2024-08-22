@@ -1,7 +1,10 @@
 <template>
     <div class="container mt-5 ms_container">
         <h2>Create Travel Plan</h2>
-        <form @submit.prevent="submitTravel" novalidate>
+
+        <div id="alertContainer"></div>
+
+        <form id="travelForm" @submit.prevent="submitTravel" novalidate>
             <!-- Travel Details -->
             <div class="mb-3">
                 <label for="title" class="form-label">Title:</label>
@@ -25,9 +28,9 @@
             <!-- Locations -->
             <div v-for="(location, index) in travel.locations" :key="index" class="mb-3">
                 <label :for="'location' + index" class="form-label">Location Name:</label>
-                
+
                 <div :id="'location' + index" class="input-container">
-                    <AddressInput v-model="location.name"/>
+                    <AddressInput v-model="location.name" />
                     <!-- <input v-model="location.name" class="form-control" required /> -->
                 </div>
                 <div class="invalid-feedback">Please provide a location.</div>
@@ -114,53 +117,85 @@ export default {
     },
     methods: {
         initializeGeocoder() {
-        // Initialize the Mapbox Geocoder
-        mapboxgl.accessToken = this.mapboxToken;
-        this.geocoder = new MapboxGeocoder({
-            accessToken: mapboxgl.accessToken,
-            mapboxgl: mapboxgl,
-            placeholder: 'Search for places',
-            countries: 'us'
-        });
-    },
-    async geocodeLocation(location, index) {
-        try {
-            const response = await axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location.name)}.json`, {
-                params: {
-                    access_token: this.mapboxToken
-                }
+            // Initialize the Mapbox Geocoder
+            mapboxgl.accessToken = this.mapboxToken;
+            this.geocoder = new MapboxGeocoder({
+                accessToken: mapboxgl.accessToken,
+                mapboxgl: mapboxgl,
+                placeholder: 'Search for places',
+                countries: 'us'
             });
+        },
+        async geocodeLocation(location, index) {
+            try {
+                const response = await axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location.name)}.json`, {
+                    params: {
+                        access_token: this.mapboxToken
+                    }
+                });
 
-            const features = response.data.features;
-            if (features.length > 0) {
-                const [long, lat] = features[0].geometry.coordinates;
+                const features = response.data.features;
+                if (features.length > 0) {
+                    const [long, lat] = features[0].geometry.coordinates;
 
-                console.log(long, lat);
-                location.long = long
-                location.lat = lat
-                
-            } else {
-                console.error('No results found for location:', location.name);
+                    console.log(long, lat);
+                    location.long = long
+                    location.lat = lat
+
+                } else {
+                    console.error('No results found for location:', location.name);
+                }
+            } catch (error) {
+                console.error('Geocoding error:', error);
             }
-        } catch (error) {
-            console.error('Geocoding error:', error);
-        }
-    },
+        },
         async submitTravel() {
             const geocodePromises = this.travel.locations.map((location, index) => this.geocodeLocation(location, index));
-        await Promise.all(geocodePromises);
+            await Promise.all(geocodePromises);
 
             if (this.validateForm()) {
-                console.log('Travel locations:', this.travel.locations);
                 axios.post('http://127.0.0.1:8888/api/travel_app_be/db_connect.php', this.travel)
                     .then(response => {
-                        alert('Travel plan submitted successfully!');
+                        // Display success alert
+                        const alertContainer = document.getElementById('alertContainer');
+                        alertContainer.innerHTML = `
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        Travel plan submitted successfully!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`;
+
+                        // Log response
                         console.log(response.data);
+
+                        // Clear the form fields
+                        this.clearForm();
                     })
                     .catch(error => {
-                        alert('An error occurred while submitting the travel plan.');
+                        // Display error alert
+                        const alertContainer = document.getElementById('alertContainer');
+                        alertContainer.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        An error occurred while submitting the travel plan.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`;
+
+                        // Log the error
                         console.error('API Error:', error.response ? error.response.data : error);
                     });
+            }
+        },
+
+        clearForm() {
+            // Reset the travel object to its initial state (adjust as needed for your form structure)
+            this.travel = {
+                locations: [],
+                // Reset other fields if necessary
+            };
+
+            // Optionally, if you're using a form element, you can reset it
+            const form = document.getElementById('travelForm'); // Replace with your form ID
+            if (form) {
+                form.reset();
             }
         },
 
