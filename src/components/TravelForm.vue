@@ -25,8 +25,9 @@
             <!-- Locations -->
             <div v-for="(location, index) in travel.locations" :key="index" class="mb-3">
                 <label :for="'location' + index" class="form-label">Location Name:</label>
-                <input :id="'location' + index" v-model="location.name" class="form-control"
-                    ref="autocompleteInput" @focus="initAutocomplete(index)" required />
+                <div :id="'location' + index" class="input-container">
+                    <input v-model="location.name" class="form-control" required />
+                </div>
                 <div class="invalid-feedback">Please provide a location.</div>
 
                 <label :for="'locationRating' + index" class="form-label">Rating:</label>
@@ -35,7 +36,8 @@
                 <label :for="'locationDone' + index" class="form-label">Is Done:</label>
                 <input type="checkbox" v-model="location.is_done" class="form-check-input" />
 
-                <button type="button" class="btn btn-danger mt-2" @click="removeLocation(index)">Remove Location</button>
+                <button type="button" class="btn btn-danger mt-2" @click="removeLocation(index)">Remove
+                    Location</button>
             </div>
             <button type="button" class="btn btn-primary mb-3" @click="addLocation">Add Location</button>
 
@@ -77,11 +79,16 @@
             <!-- Submit Button -->
             <button type="submit" class="btn btn-success">Submit Travel Plan</button>
         </form>
+
+        <!-- Map containers will be dynamically generated -->
+        <div v-for="index in travel.locations.length" :key="'map-container-' + index" :id="'map-container-' + index"
+            class="map-container"></div>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
+import mapboxgl from 'mapbox-gl';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 
 export default {
@@ -95,31 +102,73 @@ export default {
                 locations: [],
                 foods: [],
                 facts: []
-            }
+            },
+            mapboxToken: 'pk.eyJ1IjoibHVjYW1hcmlhY2F2YXRhc3NpIiwiYSI6ImNtMDNpZjlncDBid3oyaXFscGh5ODk5YWkifQ.w7Bhbf-lZDgIxyvCmGfT1A', // Replace with your Mapbox token
         };
     },
     methods: {
-        initAutocomplete(index) {
-            const inputElement = this.$refs.autocompleteInput[index];
-            const geocoder = new MapboxGeocoder({
-                accessToken: 'pk.eyJ1IjoibHVjYW1hcmlhY2F2YXRhc3NpIiwiYSI6ImNtMDNpZjlncDBid3oyaXFscGh5ODk5YWkifQ.w7Bhbf-lZDgIxyvCmGfT1A',
-                types: 'poi,address',
-                placeholder: 'Enter location',
+        initializeGeocoder() {
+        // Initialize the Mapbox Geocoder
+        mapboxgl.accessToken = this.mapboxToken;
+        this.geocoder = new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            mapboxgl: mapboxgl,
+            placeholder: 'Search for places',
+            countries: 'us'
+        });
+    },
+    async geocodeLocation(location, index) {
+        try {
+            const response = await axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location.name)}.json`, {
+                params: {
+                    access_token: this.mapboxToken
+                }
             });
 
-            geocoder.addTo(inputElement);
+            const features = response.data.features;
+            if (features.length > 0) {
+                const [long, lat] = features[0].geometry.coordinates;
 
-            geocoder.on('result', (e) => {
-                this.$set(this.travel.locations, index, {
-                    ...this.travel.locations[index],
-                    name: e.result.place_name,
-                    lat: e.result.geometry.coordinates[1],
-                    lng: e.result.geometry.coordinates[0]
-                });
-            });
+                console.log(long, lat);
+                location.long = long
+                location.lat = lat
+                
+            } else {
+                console.error('No results found for location:', location.name);
+            }
+        } catch (error) {
+            console.error('Geocoding error:', error);
+        }
+    },
+        async submitTravel() {
+            const geocodePromises = this.travel.locations.map((location, index) => this.geocodeLocation(location, index));
+        await Promise.all(geocodePromises);
+
+            if (this.validateForm()) {
+                console.log('Travel locations:', this.travel.locations);
+                axios.post('http://127.0.0.1:8888/api/travel_app_be/db_connect.php', this.travel)
+                    .then(response => {
+                        alert('Travel plan submitted successfully!');
+                        console.log(response.data);
+                    })
+                    .catch(error => {
+                        alert('An error occurred while submitting the travel plan.');
+                        console.error('API Error:', error.response ? error.response.data : error);
+                    });
+            }
         },
+
+        validateForm() {
+            const form = document.querySelector('form');
+            if (form.checkValidity() === false) {
+                form.classList.add('was-validated');
+                return false;
+            }
+            return true;
+        },
+
         addLocation() {
-            this.travel.locations.push({ name: '', rating: 0, is_done: false });
+            this.travel.locations.push({ name: '', rating: 0, is_done: false, lat: null, long: null });
         },
         removeLocation(index) {
             this.travel.locations.splice(index, 1);
@@ -135,27 +184,6 @@ export default {
         },
         removeFact(index) {
             this.travel.facts.splice(index, 1);
-        },
-        submitTravel() {
-            if (this.validateForm()) {
-                axios.post('http://127.0.0.1:8888/api/travel_app_be/db_connect.php', this.travel)
-                    .then(response => {
-                        alert('Travel plan submitted successfully!');
-                        console.log(response.data);
-                    })
-                    .catch(error => {
-                        alert('An error occurred while submitting the travel plan.');
-                        console.error(error.response.data);  // More specific error logging
-                    });
-            }
-        },
-        validateForm() {
-            const form = document.querySelector('form');
-            if (form.checkValidity() === false) {
-                form.classList.add('was-validated');
-                return false;
-            }
-            return true;
         }
     },
     mounted() {
@@ -164,8 +192,10 @@ export default {
 };
 </script>
 
+
 <style scoped lang="scss">
-@use "../style/general" as *;   
+@use "../style/general" as *;
+
 .ms_container {
     height: calc(100vh - $header-height - $footer-height);
     overflow-y: auto;
@@ -179,5 +209,11 @@ export default {
 .was-validated .form-control:valid,
 .was-validated .form-check-input:valid {
     border-color: #28a745;
+}
+
+.map-container {
+    width: 0;
+    height: 0;
+    visibility: hidden;
 }
 </style>
