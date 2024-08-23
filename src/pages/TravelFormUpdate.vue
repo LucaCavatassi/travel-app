@@ -204,17 +204,36 @@ export default {
             }
         },
         async submitTravel() {
+    if (!this.validateForm()) return; // Ensure form is valid before proceeding
+
     try {
-        // Add ID to the payload
-        const payload = { ...this.travel, id: this.travel.id };
+        // Ensure payload has proper data
+        const payload = {
+            id: this.travel.id, // Include ID if required
+            title: this.travel.title,
+            description: this.travel.description,
+            date: this.travel.date,
+            notes: this.travel.notes,
+            locations: this.travel.locations,
+            foods: this.travel.foods,
+            facts: this.travel.facts,
+        };
+
+        // Log the data to be sent for debugging
+        console.log('Sending data:', payload);
 
         // Send a PUT request to update the travel record
-        const response = await axios.put(`http://localhost:8888/api/travel_app_be/db_connect.php`, new URLSearchParams(payload).toString(), {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+        const response = await axios.put(
+            'http://localhost:8888/api/travel_app_be/db_connect.php', 
+            payload,  // Send as JSON object
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             }
-        });
+        );
 
+        // Log server response
         console.log('Response:', response.data);
 
         // Display success alert
@@ -227,6 +246,7 @@ export default {
 
         // Optionally navigate back or to another page
         // this.$router.push({ name: 'single-result', params: { slug: this.travel.slug } });
+
     } catch (error) {
         // Display error alert
         const alertContainer = document.getElementById('alertContainer');
@@ -236,10 +256,10 @@ export default {
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>`;
 
+        // Log the error
         console.error('API Error:', error.response ? error.response.data : error);
     }
 },
-
         clearForm() {
             // Reset the travel object to its initial state (adjust as needed for your form structure)
             this.travel = {
