@@ -104,18 +104,13 @@ export default {
     <div class="container-fluid">
         <div id="alertContainer"></div>
         <div class="row">
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                Delete
-            </button>
-
             <!-- Modal -->
             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Delete this travel</h1>
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Confirm</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -124,51 +119,93 @@ export default {
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             <button @click="deleteTravel(travel.id)" type="button"
-                                class="btn btn-primary">Elimina</button>
+                                class="btn btn-primary">Delete</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-
-
+            <!-- CONTENT -->
             <div class="col">
-                <h1>{{ travel.title }}</h1>
-                <p>{{ travel.date }}</p>
-                <p>{{ travel.description }}</p>
-                <p>{{ travel.notes }}</p>
+                <!-- HEADER -->
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1 class="mt-3 fw-bold">Travel details</h1>
+                    <div class="btn-info">
+                        <button class="btn btn-secondary me-3"><router-link id="link" :to="{ name: 'edit-form', params: { slug: travel.slug } }">Edit travel</router-link></button>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Delete travel</button>
+                    </div>
+                </div>
 
-                <router-link :to="{ name: 'edit-form', params: { slug: travel.slug } }">Edit form</router-link>
-                <h2>Locations</h2>
-                <ul v-if="locations.length">
-                    <li v-for="location in locations" :key="location.id">
-                        <p>{{ location.name }}</p>
-                        <p>Rating: {{ location.rating }}</p>
-                        <p>Done: {{ location.is_done ? 'Yes' : 'No' }}</p>
-                    </li>
-                </ul>
-                <p v-else>No locations available.</p>
+                <!-- MAIN-INFO -->
+                <div class="py-3 main-info" >
+                    <h3 class="mb-0 fw-bolder">Title</h3>
+                    <p class="fs-6 mb-3">{{ travel.title }}</p>
+                    <h5 class="mb-0 fw-bolder">Date</h5>
+                    <p class="fs-6 mb-3">{{ travel.date }}</p>
+    
+                    <h5 class="mb-0 fw-bolder">Description</h5>
+                    <p class="fs-6 mb-3">{{ travel.description }}</p>
+    
+                    <h5 class="mb-0 fw-bolder">Notes</h5>
+                    <p class="fs-6 mb-3">{{ travel.notes }}</p>
+                </div>
 
-                <h2>Foods</h2>
-                <ul v-if="foods.length">
-                    <li v-for="food in foods" :key="food.id">
-                        <p>{{ food.title }}</p>
-                        <p>{{ food.description }}</p>
-                        <p>Rating: {{ food.rating }}</p>
-                        <p>Done: {{ food.is_done ? 'Yes' : 'No' }}</p>
-                    </li>
-                </ul>
-                <p v-else>No foods available.</p>
+                <!-- LOCATIONS -->
+                <div class="locations">
+                    <h3 class="fw-bold">Locations to visit</h3>
+                    <ul class="ps-0" v-if="locations.length">
+                        <li class="d-flex" v-for="location in locations" :key="location.id">
+                            <p class="me-3 fst-italic">{{ location.name }}</p>
+                            <div class="dropdown">
+                                <a class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    More Details
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><p class="me-2 dropdown-item">Rating: {{ location.rating }}</p></li>
+                                    <li><p class="me-2 dropdown-item">Visited: {{ location.is_done ? 'Yes' : 'No' }}</p></li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                    <p v-else>No locations available.</p>
+                </div>
 
-                <h2>Facts</h2>
-                <ul v-if="facts.length">
-                    <li v-for="fact in facts" :key="fact.id">
-                        <p>{{ fact.title }}</p>
-                        <p>{{ fact.description }}</p>
-                        <p>Done: {{ fact.is_done ? 'Yes' : 'No' }}</p>
-                    </li>
-                </ul>
-                <p v-else>No facts available.</p>
+                <div class="foods">
+                    <h3 class="fw-bold">Foods to try</h3>
+                    <ul class="ps-0" v-if="foods.length">
+                        <li class="d-flex" v-for="food in foods" :key="food.id">
+                            <p class="me-3 fst-italic">{{ food.title }}</p>
+                            <div class="dropdown">
+                                <a class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    More Details
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><p class="me-2 dropdown-item">Rating: {{ food.rating }}</p></li>
+                                    <li><p class="me-2 dropdown-item">Tried: {{ food.is_done ? 'Yes' : 'No' }}</p></li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                    <p v-else>No foods available.</p>
+                </div>
+                <div class="facts">
+                    <h3 class="fw-bold">Fun Facts</h3>
+                    <ul class="ps-0" v-if="facts.length">
+                        <li class="d-flex" v-for="fact in facts" :key="fact.id">
+                            <p class="me-3 fst-italic">{{ fact.title }}</p>
+                            <div class="dropdown">
+                                <a class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    More Details
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><p class="me-2 dropdown-item">{{ fact.description }}</p></li>
+                                </ul>
+                            </div>
+                            
+                        </li>
+                    </ul>
+                    <p v-else>No fun facts available.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -181,4 +218,32 @@ export default {
     height: calc(100vh - $header-height - $footer-height);
     overflow-y: auto;
 }
+
+.btn-primary {
+                background-color: $purple;
+                border-color: $purple;
+            }
+            .btn-primary:hover {
+                background-color: $light-purple;
+                border-color: $light-purple;
+            }
+            .btn-secondary {
+                background-color: $secondary-blue;
+                border-color: $secondary-blue;
+            }
+            .btn-secondary:hover {
+                background-color: $blue;
+                border-color: $blue;
+            }
+
+#link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.matemasie-regular {
+        font-family: "Matemasie", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        }
 </style>
