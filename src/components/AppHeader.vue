@@ -2,10 +2,10 @@
 </script>
 
 <template>
-    <nav class="navbar navbar-expand-md" aria-label="Fourth navbar example">
+    <nav class="navbar navbar-expand-md" aria-label="Fourth navbar example" data-bs-theme="dark">
         <div class="container-fluid ms-header">
-            <router-link :to="{ name: 'landing-page'}"> 
-                <a class="navbar-brand" href="#">Travel-Tracker</a>
+            <router-link class="matemasie-regular fs-3" :to="{ name: 'landing-page'}"> 
+               Travel Diary
             </router-link>
             
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-items" aria-controls="navbar-items" aria-expanded="false" aria-label="Toggle navigation">
@@ -15,11 +15,9 @@
             <div class="collapse navbar-collapse" id="navbar-items">
                 <ul class="navbar-nav ms-auto mb-2 mb-md-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">
-                            <router-link :to="{ name: 'add-new-travel'}"> 
-                                <span>Add New Travel</span>
-                            </router-link>
-                        </a>
+                        <router-link :to="{ name: 'add-new-travel'}"> 
+                            Add New Travel
+                        </router-link>
                     </li>
                 </ul>
             </div>
@@ -29,10 +27,30 @@
 </template>
 
 <style scoped lang="scss">
+@use "../style/general" as *;
+
     .navbar {
         height: 80px;
-        background-color: grey;
+        background-color: $purple;
         --bs-navbar-brand-color: white;
+    }
+    .ms-header {
+        a {
+            text-decoration: none;
+            color: white;
+        }
+    }
+    .router-link-exact-active {
+        text-decoration: none;
+        color: $blue !important;
 
     }
+
+    .matemasie-regular {
+        font-family: "Matemasie", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        }
+
+    
 </style>

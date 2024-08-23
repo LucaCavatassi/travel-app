@@ -11,11 +11,17 @@ export default {
 </script>
 
 <template>
-  <AppHeader/>
-  <router-view></router-view>
-  <!-- <AppFooter/> -->
+  <div class="lato-regular">
+    <AppHeader/>
+    <router-view></router-view>
+    <AppFooter/>
+  </div>
 </template>
 
-<style scoped lang="scss">
-
+<style>
+  .lato-regular {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
 </style>

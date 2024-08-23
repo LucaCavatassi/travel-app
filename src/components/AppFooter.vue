@@ -12,9 +12,11 @@
 </template>
 
 <style scoped lang="scss">
+@use "../style/general" as *;
+
     .row{
         height: 50px;
-        background-color: black;
+        background-color: $blue;
         .col{
             color: white;
         }
