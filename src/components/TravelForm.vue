@@ -14,7 +14,8 @@ export default {
                 notes: '',
                 locations: [],
                 foods: [],
-                facts: []
+                facts: [],
+                images: []
             },
             mapboxToken: 'pk.eyJ1IjoibHVjYW1hcmlhY2F2YXRhc3NpIiwiYSI6ImNtMDNpZjlncDBid3oyaXFscGh5ODk5YWkifQ.w7Bhbf-lZDgIxyvCmGfT1A', // Replace with your Mapbox token
         };
@@ -23,6 +24,11 @@ export default {
         AddressInput
     },
     methods: {
+        handleFileUpload(event) {
+            this.travel.images = Array.from(event.target.files);
+            console.log(this.travel.images);
+            
+        },
         initializeGeocoder() {
             // Initialize the Mapbox Geocoder
             mapboxgl.accessToken = this.mapboxToken;
@@ -57,42 +63,64 @@ export default {
             }
         },
         async submitTravel() {
-            const geocodePromises = this.travel.locations.map((location, index) => this.geocodeLocation(location, index));
-            await Promise.all(geocodePromises);
+    const geocodePromises = this.travel.locations.map((location, index) => this.geocodeLocation(location, index));
+    await Promise.all(geocodePromises);
 
-            if (this.validateForm()) {
-                axios.post('http://127.0.0.1:8888/api/travel_app_be/db_connect.php', this.travel)
-                    .then(response => {
-                        // Display success alert
-                        const alertContainer = document.getElementById('alertContainer');
-                        alertContainer.innerHTML = `
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        Travel plan submitted successfully!
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>`;
+    if (this.validateForm()) {
+        const formData = new FormData();
 
-                        // Log response
-                        console.log(response.data);
+        // Append travel details
+        formData.append('title', this.travel.title);
+        formData.append('description', this.travel.description);
+        formData.append('date', this.travel.date);
+        formData.append('notes', this.travel.notes);
 
-                        // Clear the form fields
-                        this.clearForm();
-                        this.$router.push({ name: 'landing-page' });
-                    })
-                    .catch(error => {
-                        // Display error alert
-                        const alertContainer = document.getElementById('alertContainer');
-                        alertContainer.innerHTML = `
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        An error occurred while submitting the travel plan.
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>`;
+        // Append locations, foods, facts as JSON strings
+        formData.append('locations', JSON.stringify(this.travel.locations));
+        formData.append('foods', JSON.stringify(this.travel.foods));
+        formData.append('facts', JSON.stringify(this.travel.facts));
 
-                        // Log the error
-                        console.error('API Error:', error.response ? error.response.data : error);
-                    });
+        if (Array.isArray(this.travel.images) && this.travel.images.length > 0) {
+            this.travel.images.forEach((image, index) => {
+                formData.append(`images[]`, image);
+            });
+        }
+
+        axios.post('http://127.0.0.1:8888/api/travel_app_be/db_connect.php', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
             }
-        },
+        })
+        .then(response => {
+            // Display success alert
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.innerHTML = `
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    Travel plan submitted successfully!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`;
 
+            // Log response
+            console.log(this.travel);
+
+            // Clear the form fields
+            this.clearForm();
+            // this.$router.push({ name: 'landing-page' });
+        })
+        .catch(error => {
+            // Display error alert
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    An error occurred while submitting the travel plan.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`;
+
+            // Log the error
+            console.error('API Error:', error.response ? error.response.data : error);
+        });
+    }
+},
         clearForm() {
             // Reset the travel object to its initial state (adjust as needed for your form structure)
             this.travel = {
@@ -142,7 +170,7 @@ export default {
     <div class="container">
         <div class="row">
             
-            <form id="travelForm" @submit.prevent="submitTravel" novalidate>
+            <form id="travelForm" @submit.prevent="submitTravel" novalidate enctype="multipart/form-data">
                 <h2 class="fw-bold">Create Travel Plan</h2>
         
                 <div id="alertContainer"></div>
@@ -208,6 +236,11 @@ export default {
                     <div class="d-flex justify-content-end">
                         <button type="button" class="btn btn-danger mt-2" @click="removeFact(index)">Remove Fact</button>
                     </div>
+                </div>
+                <div class="mb-3">
+                    <label for="images" class="form-label">Upload Images</label>
+                    <input type="file" id="images" class="form-control" @change="handleFileUpload" multiple />
+                    <div class="invalid-feedback">Please upload at least one image.</div>
                 </div>
 
                 <div class="d-flex align-items-center gap-3 mb-4">
