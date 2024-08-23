@@ -245,7 +245,7 @@ export default {
             </div>`;
 
         // Optionally navigate back or to another page
-        // this.$router.push({ name: 'single-result', params: { slug: this.travel.slug } });
+        this.$router.push({ name: 'landing-page' });
 
     } catch (error) {
         // Display error alert

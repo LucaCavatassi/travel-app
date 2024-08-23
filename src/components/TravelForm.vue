@@ -165,6 +165,7 @@ export default {
 
                         // Clear the form fields
                         this.clearForm();
+                        this.$router.push({ name: 'landing-page' });
                     })
                     .catch(error => {
                         // Display error alert
