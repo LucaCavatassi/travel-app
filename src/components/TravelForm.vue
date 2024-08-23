@@ -1,92 +1,3 @@
-<template>
-    <div class="container mt-5 ms_container">
-        <h2>Create Travel Plan</h2>
-
-        <div id="alertContainer"></div>
-
-        <form id="travelForm" @submit.prevent="submitTravel" novalidate>
-            <!-- Travel Details -->
-            <div class="mb-3">
-                <label for="title" class="form-label">Title:</label>
-                <input type="text" v-model="travel.title" id="title" class="form-control" required />
-                <div class="invalid-feedback">Please provide a title.</div>
-            </div>
-            <div class="mb-3">
-                <label for="description" class="form-label">Description:</label>
-                <textarea v-model="travel.description" id="description" class="form-control"></textarea>
-            </div>
-            <div class="mb-3">
-                <label for="date" class="form-label">Date:</label>
-                <input type="date" v-model="travel.date" id="date" class="form-control" required />
-                <div class="invalid-feedback">Please provide a date.</div>
-            </div>
-            <div class="mb-3">
-                <label for="notes" class="form-label">Notes:</label>
-                <textarea v-model="travel.notes" id="notes" class="form-control"></textarea>
-            </div>
-
-            <!-- Locations -->
-            <div v-for="(location, index) in travel.locations" :key="index" class="mb-3">
-                <label :for="'location' + index" class="form-label">Location Name:</label>
-
-                <div :id="'location' + index" class="input-container">
-                    <AddressInput v-model="location.name" />
-                    <!-- <input v-model="location.name" class="form-control" required /> -->
-                </div>
-                <div class="invalid-feedback">Please provide a location.</div>
-
-                <label :for="'locationRating' + index" class="form-label">Rating:</label>
-                <input type="number" v-model="location.rating" min="1" max="5" class="form-control" />
-
-                <label :for="'locationDone' + index" class="form-label">Is Done:</label>
-                <input type="checkbox" v-model="location.is_done" class="form-check-input" />
-
-                <button type="button" class="btn btn-danger mt-2" @click="removeLocation(index)">Remove
-                    Location</button>
-            </div>
-            <button type="button" class="btn btn-primary mb-3" @click="addLocation">Add Location</button>
-
-            <!-- Foods -->
-            <div v-for="(food, index) in travel.foods" :key="index" class="mb-3">
-                <label :for="'food' + index" class="form-label">Food Title:</label>
-                <input :id="'food' + index" v-model="food.title" class="form-control" required />
-                <div class="invalid-feedback">Please provide a food title.</div>
-
-                <label :for="'foodDescription' + index" class="form-label">Description:</label>
-                <textarea v-model="food.description" class="form-control"></textarea>
-
-                <label :for="'foodRating' + index" class="form-label">Rating:</label>
-                <input type="number" v-model="food.rating" min="1" max="5" class="form-control" />
-
-                <label :for="'foodDone' + index" class="form-label">Is Done:</label>
-                <input type="checkbox" v-model="food.is_done" class="form-check-input" />
-
-                <button type="button" class="btn btn-danger mt-2" @click="removeFood(index)">Remove Food</button>
-            </div>
-            <button type="button" class="btn btn-primary mb-3" @click="addFood">Add Food</button>
-
-            <!-- Facts -->
-            <div v-for="(fact, index) in travel.facts" :key="index" class="mb-3">
-                <label :for="'fact' + index" class="form-label">Fact Title:</label>
-                <input :id="'fact' + index" v-model="fact.title" class="form-control" required />
-                <div class="invalid-feedback">Please provide a fact title.</div>
-
-                <label :for="'factDescription' + index" class="form-label">Description:</label>
-                <textarea v-model="fact.description" class="form-control"></textarea>
-
-                <label :for="'factDone' + index" class="form-label">Is Done:</label>
-                <input type="checkbox" v-model="fact.is_done" class="form-check-input" />
-
-                <button type="button" class="btn btn-danger mt-2" @click="removeFact(index)">Remove Fact</button>
-            </div>
-            <button type="button" class="btn btn-primary mb-3" @click="addFact">Add Fact</button>
-
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-success">Submit Travel Plan</button>
-        </form>
-    </div>
-</template>
-
 <script>
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
@@ -224,17 +135,101 @@ export default {
             this.travel.facts.splice(index, 1);
         }
     },
-    mounted() {
-        this.addLocation(); // Start with one location
-    }
 };
 </script>
+
+<template>
+    <div class="container mt-2">
+        <div class="row">
+            <h2>Create Travel Plan</h2>
+    
+            <div id="alertContainer"></div>
+    
+            <form id="travelForm" @submit.prevent="submitTravel" novalidate>
+                <!-- Travel Details -->
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title:</label>
+                    <input type="text" v-model="travel.title" id="title" class="form-control" required />
+                    <div class="invalid-feedback">Please provide a title.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description:</label>
+                    <textarea v-model="travel.description" id="description" class="form-control"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="date" class="form-label">Date:</label>
+                    <input type="date" v-model="travel.date" id="date" class="form-control" required />
+                    <div class="invalid-feedback">Please provide a date.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="notes" class="form-label">Notes:</label>
+                    <textarea v-model="travel.notes" id="notes" class="form-control"></textarea>
+                </div>
+    
+                <!-- Locations -->
+                <div v-for="(location, index) in travel.locations" :key="index" class="mb-3">
+                    <label :for="'location' + index" class="form-label">Location Name:</label>
+    
+                    <div :id="'location' + index" class="input-container">
+                        <AddressInput v-model="location.name" />
+                    </div>
+                    <div class="invalid-feedback">Please provide a location.</div>
+                </div>
+    
+                <!-- Foods -->
+                <div v-for="(food, index) in travel.foods" :key="index" class="mb-3">
+                    <label :for="'food' + index" class="form-label">Food Title:</label>
+                    <input :id="'food' + index" v-model="food.title" class="form-control" required />
+                    <div class="invalid-feedback">Please provide a food title.</div>
+    
+                    <label :for="'foodDescription' + index" class="form-label">Description:</label>
+                    <textarea v-model="food.description" class="form-control"></textarea>
+    
+                    <label :for="'foodRating' + index" class="form-label">Rating:</label>
+                    <input type="number" v-model="food.rating" min="1" max="5" class="form-control" />
+    
+                    <label :for="'foodDone' + index" class="form-label">Is Done:</label>
+                    <input type="checkbox" v-model="food.is_done" class="form-check-input" />
+    
+                    <button type="button" class="btn btn-danger mt-2" @click="removeFood(index)">Remove Food</button>
+                </div>
+                
+    
+                <!-- Facts -->
+                <div v-for="(fact, index) in travel.facts" :key="index" class="mb-3">
+                    <label :for="'fact' + index" class="form-label">Fact Title:</label>
+                    <input :id="'fact' + index" v-model="fact.title" class="form-control" required />
+                    <div class="invalid-feedback">Please provide a fact title.</div>
+    
+                    <label :for="'factDescription' + index" class="form-label">Description:</label>
+                    <textarea v-model="fact.description" class="form-control"></textarea>
+    
+                    <label :for="'factDone' + index" class="form-label">Is Done:</label>
+                    <input type="checkbox" v-model="fact.is_done" class="form-check-input" />
+    
+                    <button type="button" class="btn btn-danger mt-2" @click="removeFact(index)">Remove Fact</button>
+                </div>
+
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <button type="button" class="btn btn-primary" @click="addLocation">Add Locations</button>
+                    <button type="button" class="btn btn-primary" @click="addFood">Add Foods</button>
+                    <button type="button" class="btn btn-primary" @click="addFact">Add Fun Facts</button>
+                    <button type="submit" class="btn btn-secondary">Submit Travel Plan</button>
+                </div>
+    
+                <!-- Submit Button -->
+            </form>
+        </div>
+    </div>
+</template>
+
+
 
 
 <style scoped lang="scss">
 @use "../style/general" as *;
 
-.ms_container {
+.row {
     height: calc(100vh - $header-height - $footer-height);
     overflow-y: auto;
 }
@@ -253,5 +248,25 @@ export default {
     width: 0;
     height: 0;
     visibility: hidden;
+}
+
+.btn-primary {
+    background-color: $purple;
+    border-color: $purple;
+}
+
+.btn-primary:hover {
+    background-color: $light-purple;
+    border-color: $light-purple;
+}
+
+.btn-secondary {
+    background-color: $secondary-blue;
+    border-color: $secondary-blue;
+}
+
+.btn-secondary:hover {
+    background-color: $blue;
+    border-color: $blue;
 }
 </style>

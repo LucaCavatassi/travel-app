@@ -14,7 +14,7 @@
 
             <div class="collapse navbar-collapse" id="navbar-items">
                 <ul class="navbar-nav ms-auto mb-2 mb-md-0">
-                    <li class="nav-item">
+                    <li class="nav-item fw-bold">
                         <router-link :to="{ name: 'add-new-travel'}"> 
                             Add New Travel
                         </router-link>

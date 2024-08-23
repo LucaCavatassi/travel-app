@@ -131,21 +131,24 @@ export default {
                 <div class="d-flex justify-content-between align-items-center">
                     <h1 class="mt-3 fw-bold">Travel details</h1>
                     <div class="btn-info">
-                        <button class="btn btn-secondary me-3"><router-link id="link" :to="{ name: 'edit-form', params: { slug: travel.slug } }">Edit travel</router-link></button>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Delete travel</button>
+                        <button class="btn btn-secondary me-3"><router-link id="link"
+                                :to="{ name: 'edit-form', params: { slug: travel.slug } }">Edit
+                                travel</router-link></button>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal">Delete travel</button>
                     </div>
                 </div>
 
                 <!-- MAIN-INFO -->
-                <div class="py-3 main-info" >
+                <div class="py-3 main-info">
                     <h3 class="mb-0 fw-bolder">Title</h3>
                     <p class="fs-6 mb-3">{{ travel.title }}</p>
                     <h5 class="mb-0 fw-bolder">Date</h5>
                     <p class="fs-6 mb-3">{{ travel.date }}</p>
-    
+
                     <h5 class="mb-0 fw-bolder">Description</h5>
                     <p class="fs-6 mb-3">{{ travel.description }}</p>
-    
+
                     <h5 class="mb-0 fw-bolder">Notes</h5>
                     <p class="fs-6 mb-3">{{ travel.notes }}</p>
                 </div>
@@ -157,12 +160,17 @@ export default {
                         <li class="d-flex" v-for="location in locations" :key="location.id">
                             <p class="me-3 fst-italic">{{ location.name }}</p>
                             <div class="dropdown">
-                                <a class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a class="dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
                                     More Details
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><p class="me-2 dropdown-item">Rating: {{ location.rating }}</p></li>
-                                    <li><p class="me-2 dropdown-item">Visited: {{ location.is_done ? 'Yes' : 'No' }}</p></li>
+                                    <li>
+                                        <p class="me-2 dropdown-item">Rating: {{ location.rating }}</p>
+                                    </li>
+                                    <li>
+                                        <p class="me-2 dropdown-item">Visited: {{ location.is_done == 1 ? 'Yes' : 'No' }}</p>
+                                    </li>
                                 </ul>
                             </div>
                         </li>
@@ -176,12 +184,17 @@ export default {
                         <li class="d-flex" v-for="food in foods" :key="food.id">
                             <p class="me-3 fst-italic">{{ food.title }}</p>
                             <div class="dropdown">
-                                <a class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a class="dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
                                     More Details
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><p class="me-2 dropdown-item">Rating: {{ food.rating }}</p></li>
-                                    <li><p class="me-2 dropdown-item">Tried: {{ food.is_done ? 'Yes' : 'No' }}</p></li>
+                                    <li>
+                                        <p class="me-2 dropdown-item">Rating: {{ food.rating }}</p>
+                                    </li>
+                                    <li>
+                                        <p class="me-2 dropdown-item">Tried: {{ food.is_done == 1 ? 'Yes' : 'No' }}</p>
+                                    </li>
                                 </ul>
                             </div>
                         </li>
@@ -194,14 +207,17 @@ export default {
                         <li class="d-flex" v-for="fact in facts" :key="fact.id">
                             <p class="me-3 fst-italic">{{ fact.title }}</p>
                             <div class="dropdown">
-                                <a class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a class="dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
                                     More Details
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><p class="me-2 dropdown-item">{{ fact.description }}</p></li>
+                                    <li>
+                                        <p class="me-2 dropdown-item">{{ fact.description }}</p>
+                                    </li>
                                 </ul>
                             </div>
-                            
+
                         </li>
                     </ul>
                     <p v-else>No fun facts available.</p>
@@ -220,21 +236,24 @@ export default {
 }
 
 .btn-primary {
-                background-color: $purple;
-                border-color: $purple;
-            }
-            .btn-primary:hover {
-                background-color: $light-purple;
-                border-color: $light-purple;
-            }
-            .btn-secondary {
-                background-color: $secondary-blue;
-                border-color: $secondary-blue;
-            }
-            .btn-secondary:hover {
-                background-color: $blue;
-                border-color: $blue;
-            }
+    background-color: $purple;
+    border-color: $purple;
+}
+
+.btn-primary:hover {
+    background-color: $light-purple;
+    border-color: $light-purple;
+}
+
+.btn-secondary {
+    background-color: $secondary-blue;
+    border-color: $secondary-blue;
+}
+
+.btn-secondary:hover {
+    background-color: $blue;
+    border-color: $blue;
+}
 
 #link {
     text-decoration: none;
@@ -242,8 +261,8 @@ export default {
 }
 
 .matemasie-regular {
-        font-family: "Matemasie", sans-serif;
-        font-weight: 400;
-        font-style: normal;
-        }
+    font-family: "Matemasie", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
 </style>
