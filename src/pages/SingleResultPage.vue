@@ -69,32 +69,32 @@ export default {
             }
         },
         async deleteTravel(travelId) {
-    if (!travelId) {
-        console.error('No travel ID to delete');
-        return;
-    }
+            if (!travelId) {
+                console.error('No travel ID to delete');
+                return;
+            }
 
-    try {
-        // Send DELETE request to the server
-        const response = await axios.delete('http://localhost:8888/api/travel_app_be/db_connect.php', {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            data: {
-                id: travelId,
-            },
-        });
+            try {
+                // Send DELETE request to the server
+                const response = await axios.delete('http://localhost:8888/api/travel_app_be/db_connect.php', {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    data: {
+                        id: travelId,
+                    },
+                });
 
-        if (response.data.success) {
-            console.log('Travel deleted successfully:', response.data);
-            this.$router.push({ name: 'landing-page' });
-        } else {
-            console.error('Error deleting travel:', response.data.error);
+                if (response.data.success) {
+                    console.log('Travel deleted successfully:', response.data);
+                    this.$router.push({ name: 'landing-page' });
+                } else {
+                    console.error('Error deleting travel:', response.data.error);
+                }
+            } catch (error) {
+                console.error('Error deleting travel:', error);
+            }
         }
-    } catch (error) {
-        console.error('Error deleting travel:', error);
-    }
-}
 
     }
 };
@@ -123,7 +123,8 @@ export default {
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button @click="deleteTravel(travel.id)" type="button" class="btn btn-primary">Elimina</button>
+                            <button @click="deleteTravel(travel.id)" type="button"
+                                class="btn btn-primary">Elimina</button>
                         </div>
                     </div>
                 </div>
