@@ -63,35 +63,38 @@ export default {
             }
         },
         async submitTravel() {
-    const geocodePromises = this.travel.locations.map((location, index) => this.geocodeLocation(location, index));
-    await Promise.all(geocodePromises);
+    try {
+        const geocodePromises = this.travel.locations.map((location, index) => this.geocodeLocation(location, index));
+        await Promise.all(geocodePromises);
 
-    if (this.validateForm()) {
-        const formData = new FormData();
+        if (this.validateForm()) {
+            const formData = new FormData();
 
-        // Append travel details
-        formData.append('title', this.travel.title);
-        formData.append('description', this.travel.description);
-        formData.append('date', this.travel.date);
-        formData.append('notes', this.travel.notes);
+            // Append travel details
+            formData.append('title', this.travel.title);
+            formData.append('description', this.travel.description);
+            formData.append('date', this.travel.date);
+            formData.append('notes', this.travel.notes);
 
-        // Append locations, foods, facts as JSON strings
-        formData.append('locations', JSON.stringify(this.travel.locations));
-        formData.append('foods', JSON.stringify(this.travel.foods));
-        formData.append('facts', JSON.stringify(this.travel.facts));
+            // Append locations, foods, facts as JSON strings
+            formData.append('locations', JSON.stringify(this.travel.locations));
+            formData.append('foods', JSON.stringify(this.travel.foods));
+            formData.append('facts', JSON.stringify(this.travel.facts));
 
-        if (Array.isArray(this.travel.images) && this.travel.images.length > 0) {
-            this.travel.images.forEach((image, index) => {
-                formData.append(`images[]`, image);
-            });
-        }
-
-        axios.post('http://127.0.0.1:8888/api/travel_app_be/db_connect.php', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
+            // Append images if they exist
+            if (Array.isArray(this.travel.images) && this.travel.images.length > 0) {
+                this.travel.images.forEach((image, index) => {
+                    formData.append('images[]', image);
+                });
             }
-        })
-        .then(response => {
+
+            // Make the API request
+            const response = await axios.post('http://127.0.0.1:8888/api/travel_app_be/db_connect.php', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
             // Display success alert
             const alertContainer = document.getElementById('alertContainer');
             alertContainer.innerHTML = `
@@ -101,24 +104,28 @@ export default {
                 </div>`;
 
             // Log response
-            console.log(this.travel);
+            console.log('Response:', response.data);
 
             // Clear the form fields
             this.clearForm();
+            // Optionally redirect
             // this.$router.push({ name: 'landing-page' });
-        })
-        .catch(error => {
-            // Display error alert
-            const alertContainer = document.getElementById('alertContainer');
-            alertContainer.innerHTML = `
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    An error occurred while submitting the travel plan.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>`;
 
-            // Log the error
-            console.error('API Error:', error.response ? error.response.data : error);
-        });
+        } else {
+            console.error('Form validation failed.');
+        }
+
+    } catch (error) {
+        // Display error alert
+        const alertContainer = document.getElementById('alertContainer');
+        alertContainer.innerHTML = `
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                An error occurred while submitting the travel plan.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>`;
+
+        // Log the error
+        console.error('API Error:', error.response ? error.response.data : error);
     }
 },
         clearForm() {
