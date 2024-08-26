@@ -223,7 +223,7 @@ export default {
                     </div>
                 </div>
 
-                <!-- IMAGES -->
+                <!-- Images -->
                 <div class="mb-2 border border-primary rounded p-4">
                     <div class="images mb-2">
                         <div class="mb-3">
