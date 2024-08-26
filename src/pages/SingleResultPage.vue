@@ -12,6 +12,7 @@ export default {
             locations: [],
             foods: [],
             facts: [],
+            images: [],
             travelIdToDelete: null,
         };
     },
@@ -30,11 +31,22 @@ export default {
                     await Promise.all([
                         this.fetchLocations(this.travel.id),
                         this.fetchFoods(this.travel.id),
-                        this.fetchFacts(this.travel.id)
+                        this.fetchFacts(this.travel.id),
+                        this.fetchImages(this.travel.id)
                     ]);
                 }
             } catch (error) {
                 console.error('There was an error fetching the travel details!', error);
+            }
+        },
+        async fetchImages(travelId) {
+            try {
+                const response = await axios.get(`http://127.0.0.1:8888/api/travel_app_be/getImagesByTravelId.php`, {
+                    params: { travel_id: travelId }
+                });
+                this.images = response.data;
+            } catch (error) {
+                console.error('Error fetching images:', error);
             }
         },
 
@@ -178,6 +190,7 @@ export default {
                     <p v-else>No locations available.</p>
                 </div>
 
+                <!-- FOODS -->
                 <div class="foods">
                     <h3 class="fw-bold">Foods to try</h3>
                     <ul class="ps-0" v-if="foods.length">
@@ -201,6 +214,8 @@ export default {
                     </ul>
                     <p v-else>No foods available.</p>
                 </div>
+
+                <!-- FACTS -->
                 <div class="facts">
                     <h3 class="fw-bold">Fun Facts</h3>
                     <ul class="ps-0" v-if="facts.length">
@@ -222,6 +237,16 @@ export default {
                     </ul>
                     <p v-else>No fun facts available.</p>
                 </div>
+
+                <div class="images">
+                    <h3 class="fw-bold">Images</h3>
+                    <div v-if="images.length">
+                        <div v-for="image in images" :key="image" class="image-container">
+                            <img :src="`http://127.0.0.1:8888/api/travel_app_be/uploads/${image}`" alt="Travel Image" />
+                        </div>
+                    </div>
+                    <p v-else>No images available</p>
+                </div>
             </div>
         </div>
     </div>
@@ -229,6 +254,15 @@ export default {
 
 <style scoped lang="scss">
 @use "../style/general" as *;
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.image-container {
+    margin-bottom: 15px;
+    position: relative;
+}
 
 .row {
     height: calc(100vh - $header-height - $footer-height);
