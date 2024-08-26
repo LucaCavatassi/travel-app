@@ -223,34 +223,36 @@ export default {
 <template>
     <div class="container">
         <div class="row">
-            <form id="travelForm" @submit.prevent="submitTravel" class="mb-3" novalidate>
+            <form id="travelForm" @submit.prevent="submitTravel" class="mb-3 mt-3" novalidate>
                 <h2 class="fw-bold">Update Travel</h2>
     
                 <div id="alertContainer"></div>
     
                 <!-- Travel Details -->
-                <div class="mb-3">
-                    <label for="title" class="form-label mb-2">Title</label>
-                    <input type="text" v-model="travel.title" id="title" class="form-control" required />
-                    <div class="invalid-feedback">Please provide a title.</div>
-                </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label mb-2">Description</label>
-                    <textarea v-model="travel.description" id="description" class="form-control"></textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="date" class="form-label mb-2">Date</label>
-                    <input type="date" v-model="travel.date" id="date" class="form-control" required />
-                    <div class="invalid-feedback">Please provide a date.</div>
-                </div>
-                <div class="mb-3">
-                    <label for="notes" class="form-label mb-2">Notes</label>
-                    <textarea v-model="travel.notes" id="notes" class="form-control"></textarea>
+                <div class="main-info mb-2 border border-primary rounded p-4">
+                    <div class="mb-3">
+                        <label for="title" class="form-label mb-2">Title</label>
+                        <input type="text" v-model="travel.title" id="title" class="form-control" required />
+                        <div class="invalid-feedback">Please provide a title.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label mb-2">Description</label>
+                        <textarea v-model="travel.description" id="description" class="form-control"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="date" class="form-label mb-2">Date</label>
+                        <input type="date" v-model="travel.date" id="date" class="form-control" required />
+                        <div class="invalid-feedback">Please provide a date.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label mb-2">Notes</label>
+                        <textarea v-model="travel.notes" id="notes" class="form-control"></textarea>
+                    </div>
                 </div>
     
                 <!-- Locations -->
                 <h3 class="fw-bold">Locations</h3>
-                <div class="mb-2">
+                <div class="mb-2 border border-primary rounded p-4">
                     <div v-for="(location, index) in travel.locations" :key="index" class="mb-3">
                         <label :for="'location' + index" class="form-label mb-2">Location Name</label>
         
@@ -278,7 +280,7 @@ export default {
     
                 <!-- Foods -->
                 <h3 class="fw-bold">Foods</h3>
-                <div class="mb-2">
+                <div class="mb-2 border border-primary rounded p-4">
                     <div v-for="(food, index) in travel.foods" :key="index" class="mb-3">
                         <label :for="'food' + index" class="form-label mb-2">Food Name</label>
                         <input :id="'food' + index" v-model="food.title" class="form-control mb-2" required />
@@ -304,7 +306,7 @@ export default {
     
                 <!-- Facts -->
                 <h3 class="fw-bold">Facts</h3>
-                <div class="mb-2">
+                <div class="mb-2 border border-primary rounded p-4">
                     <div v-for="(fact, index) in travel.facts" :key="index" class="mb-3">
                         <label :for="'fact' + index" class="form-label mb-2">Fact Title</label>
                         <input :id="'fact' + index" v-model="fact.title" class="form-control mb-2" required />
@@ -320,8 +322,10 @@ export default {
                     <button type="button" class="btn btn-primary mb-3" @click="addFact">Add Fact</button>
                 </div>
     
-                <!-- Submit Button -->
-                <button type="submit" class="btn btn-secondary">Submit Travel Plan</button>
+                <div class="d-flex justify-content-end">
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-secondary">Update Plan</button>
+                </div>
             </form>
         </div>
     </div>
@@ -365,6 +369,11 @@ export default {
 .btn-primary {
     background-color: $purple;
     border-color: $purple;
+}
+
+.border-primary {
+    // background-color: $purple;   
+    border-color: $purple !important;
 }
 
 .btn-primary:hover {
