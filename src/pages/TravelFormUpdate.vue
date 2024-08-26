@@ -1,92 +1,3 @@
-<template>
-    <div class="container mt-5 ms_container">
-        <h2>Update Travel Plan</h2>
-
-        <div id="alertContainer"></div>
-
-        <form id="travelForm" @submit.prevent="submitTravel" novalidate>
-            <!-- Travel Details -->
-            <div class="mb-3">
-                <label for="title" class="form-label">Title</label>
-                <input type="text" v-model="travel.title" id="title" class="form-control" required />
-                <div class="invalid-feedback">Please provide a title.</div>
-            </div>
-            <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
-                <textarea v-model="travel.description" id="description" class="form-control"></textarea>
-            </div>
-            <div class="mb-3">
-                <label for="date" class="form-label">Date</label>
-                <input type="date" v-model="travel.date" id="date" class="form-control" required />
-                <div class="invalid-feedback">Please provide a date.</div>
-            </div>
-            <div class="mb-3">
-                <label for="notes" class="form-label">Notes</label>
-                <textarea v-model="travel.notes" id="notes" class="form-control"></textarea>
-            </div>
-
-            <!-- Locations -->
-            <div v-for="(location, index) in travel.locations" :key="index" class="mb-3">
-                <label :for="'location' + index" class="form-label">Location Name:</label>
-
-                <div :id="'location' + index" class="input-container">
-                    <AddressInput v-model="location.name" />
-                    <!-- <input v-model="location.name" class="form-control" required /> -->
-                </div>
-                <div class="invalid-feedback">Please provide a location.</div>
-
-                <label :for="'locationRating' + index" class="form-label">Rating:</label>
-                <input type="number" v-model="location.rating" min="1" max="5" class="form-control" />
-
-                <label :for="'locationDone' + index" class="form-label">Is Done:</label>
-                <input type="checkbox" v-model="location.is_done" class="form-check-input" />
-
-                <button type="button" class="btn btn-danger mt-2" @click="removeLocation(index)">Remove
-                    Location</button>
-            </div>
-            <button type="button" class="btn btn-primary mb-3" @click="addLocation">Add Location</button>
-
-            <!-- Foods -->
-            <div v-for="(food, index) in travel.foods" :key="index" class="mb-3">
-                <label :for="'food' + index" class="form-label">Food Title:</label>
-                <input :id="'food' + index" v-model="food.title" class="form-control" required />
-                <div class="invalid-feedback">Please provide a food title.</div>
-
-                <label :for="'foodDescription' + index" class="form-label">Description:</label>
-                <textarea v-model="food.description" class="form-control"></textarea>
-
-                <label :for="'foodRating' + index" class="form-label">Rating:</label>
-                <input type="number" v-model="food.rating" min="1" max="5" class="form-control" />
-
-                <label :for="'foodDone' + index" class="form-label">Is Done:</label>
-                <input type="checkbox" v-model="food.is_done" class="form-check-input" />
-
-                <button type="button" class="btn btn-danger mt-2" @click="removeFood(index)">Remove Food</button>
-            </div>
-            <button type="button" class="btn btn-primary mb-3" @click="addFood">Add Food</button>
-
-            <!-- Facts -->
-            <div v-for="(fact, index) in travel.facts" :key="index" class="mb-3">
-                <label :for="'fact' + index" class="form-label">Fact Title:</label>
-                <input :id="'fact' + index" v-model="fact.title" class="form-control" required />
-                <div class="invalid-feedback">Please provide a fact title.</div>
-
-                <label :for="'factDescription' + index" class="form-label">Description:</label>
-                <textarea v-model="fact.description" class="form-control"></textarea>
-
-                <label :for="'factDone' + index" class="form-label">Is Done:</label>
-                <input type="checkbox" v-model="fact.is_done" class="form-check-input" />
-
-                <button type="button" class="btn btn-danger mt-2" @click="removeFact(index)">Remove Fact</button>
-            </div>
-            <button type="button" class="btn btn-primary mb-3" @click="addFact">Add Fact</button>
-
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-success">Submit Travel Plan</button>
-        </form>
-    </div>
-</template>
-
 <script>
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
@@ -207,7 +118,7 @@ export default {
     if (!this.validateForm()) return; // Ensure form is valid before proceeding
 
     try {
-        // Ensure payload has proper data
+        // Prepare payload
         const payload = {
             id: this.travel.id, // Include ID if required
             title: this.travel.title,
@@ -219,10 +130,10 @@ export default {
             facts: this.travel.facts,
         };
 
-        // Log the data to be sent for debugging
-        console.log('Sending data:', payload);
+        // Log the payload for debugging
+        console.log('Payload to be sent:', payload);
 
-        // Send a PUT request to update the travel record
+        // Send PUT request to update the travel record
         const response = await axios.put(
             'http://localhost:8888/api/travel_app_be/db_connect.php', 
             payload,  // Send as JSON object
@@ -233,8 +144,8 @@ export default {
             }
         );
 
-        // Log server response
-        console.log('Response:', response.data);
+        // Log the server response
+        console.log('Server Response:', response.data);
 
         // Display success alert
         const alertContainer = document.getElementById('alertContainer');
@@ -248,6 +159,9 @@ export default {
         this.$router.push({ name: 'landing-page' });
 
     } catch (error) {
+        // Log detailed error information
+        console.error('API Error:', error.response ? error.response.data : error);
+
         // Display error alert
         const alertContainer = document.getElementById('alertContainer');
         alertContainer.innerHTML = `
@@ -255,9 +169,6 @@ export default {
                 An error occurred while updating the travel plan.
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>`;
-
-        // Log the error
-        console.error('API Error:', error.response ? error.response.data : error);
     }
 },
         clearForm() {
@@ -309,10 +220,128 @@ export default {
 </script>
 
 
+<template>
+    <div class="container">
+        <div class="row">
+            <form id="travelForm" @submit.prevent="submitTravel" class="mb-3" novalidate>
+                <h2 class="fw-bold">Update Travel</h2>
+    
+                <div id="alertContainer"></div>
+    
+                <!-- Travel Details -->
+                <div class="mb-3">
+                    <label for="title" class="form-label mb-2">Title</label>
+                    <input type="text" v-model="travel.title" id="title" class="form-control" required />
+                    <div class="invalid-feedback">Please provide a title.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label mb-2">Description</label>
+                    <textarea v-model="travel.description" id="description" class="form-control"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="date" class="form-label mb-2">Date</label>
+                    <input type="date" v-model="travel.date" id="date" class="form-control" required />
+                    <div class="invalid-feedback">Please provide a date.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="notes" class="form-label mb-2">Notes</label>
+                    <textarea v-model="travel.notes" id="notes" class="form-control"></textarea>
+                </div>
+    
+                <!-- Locations -->
+                <h3 class="fw-bold">Locations</h3>
+                <div class="mb-2">
+                    <div v-for="(location, index) in travel.locations" :key="index" class="mb-3">
+                        <label :for="'location' + index" class="form-label mb-2">Location Name</label>
+        
+                        <div :id="'location' + index" class="input-container">
+                            <AddressInput v-model="location.name" />
+                            <!-- <input v-model="location.name" class="form-control" required /> -->
+                        </div>
+                        <div class="invalid-feedback">Please provide a location.</div>
+        
+                        <label :for="'locationRating' + index" class="form-label mb-2">Rating:</label>
+                        <input type="number" v-model="location.rating" min="1" max="5" class="form-control" />
+        
+                        <div class="d-flex align-items-center justify-content-between mt-2">
+                            <div class="">
+                                <label :for="'locationDone' + index" class="form-label mb-2 m-0">Visited</label>
+                                <input type="checkbox" v-model="location.is_done" class="ms-2 form-check-input" />
+                            </div>
+            
+                            <button type="button" class="btn btn-danger" @click="removeLocation(index)">Remove
+                                Location</button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary mb-3" @click="addLocation">Add Location</button>
+                </div>
+    
+                <!-- Foods -->
+                <h3 class="fw-bold">Foods</h3>
+                <div class="mb-2">
+                    <div v-for="(food, index) in travel.foods" :key="index" class="mb-3">
+                        <label :for="'food' + index" class="form-label mb-2">Food Name</label>
+                        <input :id="'food' + index" v-model="food.title" class="form-control mb-2" required />
+                        <div class="invalid-feedback">Please provide a food title.</div>
+        
+                        <label :for="'foodDescription' + index" class="form-label mb-2">Description</label>
+                        <textarea v-model="food.description" class="form-control mb-2"></textarea>
+        
+                        <label :for="'foodRating' + index" class="form-label mb-2">Rating</label>
+                        <input type="number" v-model="food.rating" min="0" max="5" class="form-control mb-2" />
+        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <label :for="'foodDone' + index" class="form-label mb-2 m-0">Tried</label>
+                                <input type="checkbox" v-model="food.is_done" class="form-check-input ms-2" />
+                            </div>
+                            <button type="button" class="btn btn-danger mt-2" @click="removeFood(index)">Remove Food</button>
+                        </div>
+        
+                    </div>
+                    <button type="button" class="btn btn-primary mb-3" @click="addFood">Add Food</button>
+                </div>
+    
+                <!-- Facts -->
+                <h3 class="fw-bold">Facts</h3>
+                <div class="mb-2">
+                    <div v-for="(fact, index) in travel.facts" :key="index" class="mb-3">
+                        <label :for="'fact' + index" class="form-label mb-2">Fact Title</label>
+                        <input :id="'fact' + index" v-model="fact.title" class="form-control mb-2" required />
+                        <div class="invalid-feedback">Please provide a fact title.</div>
+        
+                        <label :for="'factDescription' + index" class="form-label mb-2">Description</label>
+                        <textarea v-model="fact.description" class="form-control mb-2"></textarea>
+        
+                        <div class="d-flex justify-content-end align-items-center mt-2">
+                            <button type="button" class="btn btn-danger" @click="removeFact(index)">Remove Fact</button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary mb-3" @click="addFact">Add Fact</button>
+                </div>
+    
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-secondary">Submit Travel Plan</button>
+            </form>
+        </div>
+    </div>
+</template>
+
+
 <style scoped lang="scss">
 @use "../style/general" as *;
+.image-preview {
+    width: 200px;
+    height: auto;
+    position: relative;
+}
 
-.ms_container {
+#remove_btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+.row {
     height: calc(100vh - $header-height - $footer-height);
     overflow-y: auto;
 }
@@ -331,5 +360,25 @@ export default {
     width: 0;
     height: 0;
     visibility: hidden;
+}
+
+.btn-primary {
+    background-color: $purple;
+    border-color: $purple;
+}
+
+.btn-primary:hover {
+    background-color: $light-purple;
+    border-color: $light-purple;
+}
+
+.btn-secondary {
+    background-color: $secondary-blue;
+    border-color: $secondary-blue;
+}
+
+.btn-secondary:hover {
+    background-color: $blue;
+    border-color: $blue;
 }
 </style>

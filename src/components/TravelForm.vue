@@ -241,7 +241,7 @@ export default {
                 </div>
 
                 <!-- Locations -->
-                <div v-for="(location, index) in travel.locations" :key="index" class="mb-2">
+                <div v-for="(location, index) in travel.locations" :key="index" class="mb-3">
                     <label :for="'location' + index" class="form-label">Location Name</label>
 
                     <div :id="'location' + index" class="input-container">
