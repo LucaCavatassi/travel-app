@@ -1,27 +1,27 @@
 <template>
     <div class="container mt-5 ms_container">
-        <h2>Create Travel Plan</h2>
+        <h2>Update Travel Plan</h2>
 
         <div id="alertContainer"></div>
 
         <form id="travelForm" @submit.prevent="submitTravel" novalidate>
             <!-- Travel Details -->
             <div class="mb-3">
-                <label for="title" class="form-label">Title:</label>
+                <label for="title" class="form-label">Title</label>
                 <input type="text" v-model="travel.title" id="title" class="form-control" required />
                 <div class="invalid-feedback">Please provide a title.</div>
             </div>
             <div class="mb-3">
-                <label for="description" class="form-label">Description:</label>
+                <label for="description" class="form-label">Description</label>
                 <textarea v-model="travel.description" id="description" class="form-control"></textarea>
             </div>
             <div class="mb-3">
-                <label for="date" class="form-label">Date:</label>
+                <label for="date" class="form-label">Date</label>
                 <input type="date" v-model="travel.date" id="date" class="form-control" required />
                 <div class="invalid-feedback">Please provide a date.</div>
             </div>
             <div class="mb-3">
-                <label for="notes" class="form-label">Notes:</label>
+                <label for="notes" class="form-label">Notes</label>
                 <textarea v-model="travel.notes" id="notes" class="form-control"></textarea>
             </div>
 

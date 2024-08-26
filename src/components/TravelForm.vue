@@ -25,9 +25,9 @@ export default {
     },
     methods: {
         handleFileUpload(event) {
-            this.travel.images = Array.from(event.target.files);
+            this.travel.images.push(...Array.from(event.target.files));
             console.log(this.travel.images);
-            
+
         },
         initializeGeocoder() {
             // Initialize the Mapbox Geocoder
@@ -63,76 +63,85 @@ export default {
             }
         },
         async submitTravel() {
-    try {
-        const geocodePromises = this.travel.locations.map((location, index) => this.geocodeLocation(location, index));
-        await Promise.all(geocodePromises);
+            try {
+                const geocodePromises = this.travel.locations.map((location, index) => this.geocodeLocation(location, index));
+                await Promise.all(geocodePromises);
 
-        if (this.validateForm()) {
-            const formData = new FormData();
+                if (this.validateForm()) {
+                    const formData = new FormData();
 
-            // Append travel details
-            formData.append('title', this.travel.title);
-            formData.append('description', this.travel.description);
-            formData.append('date', this.travel.date);
-            formData.append('notes', this.travel.notes);
+                    // Append travel details
+                    formData.append('title', this.travel.title);
+                    formData.append('description', this.travel.description);
+                    formData.append('date', this.travel.date);
+                    formData.append('notes', this.travel.notes);
 
-            // Append locations, foods, facts as JSON strings
-            formData.append('locations', JSON.stringify(this.travel.locations));
-            formData.append('foods', JSON.stringify(this.travel.foods));
-            formData.append('facts', JSON.stringify(this.travel.facts));
+                    // Append locations, foods, facts as JSON strings
+                    formData.append('locations', JSON.stringify(this.travel.locations));
+                    formData.append('foods', JSON.stringify(this.travel.foods));
+                    formData.append('facts', JSON.stringify(this.travel.facts));
 
-            // Append images if they exist
-            if (Array.isArray(this.travel.images) && this.travel.images.length > 0) {
-                this.travel.images.forEach((image, index) => {
-                    formData.append('images[]', image);
-                });
-            }
+                    // Append images if they exist
+                    if (Array.isArray(this.travel.images) && this.travel.images.length > 0) {
+                        this.travel.images.forEach((image, index) => {
+                            formData.append('images[]', image);
+                        });
+                    }
 
-            // Make the API request
-            const response = await axios.post('http://127.0.0.1:8888/api/travel_app_be/db_connect.php', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
+                    // Make the API request
+                    const response = await axios.post('http://127.0.0.1:8888/api/travel_app_be/db_connect.php', formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    });
 
-            // Display success alert
-            const alertContainer = document.getElementById('alertContainer');
-            alertContainer.innerHTML = `
+                    // Display success alert
+                    const alertContainer = document.getElementById('alertContainer');
+                    alertContainer.innerHTML = `
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     Travel plan submitted successfully!
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>`;
 
-            // Log response
-            console.log('Response:', response.data);
+                    // Log response
+                    
+                    // Clear the form fields
+                    this.clearForm();
+                    console.log('Response:', response.data);
+                    // Optionally redirect
+                    const slug = response.data.slug;
 
-            // Clear the form fields
-            this.clearForm();
-            // Optionally redirect
-            // this.$router.push({ name: 'landing-page' });
+                    this.$router.push({ name: 'single-result', params: { slug: slug } });
+                    // Redirect to the new travel page using the slug
 
-        } else {
-            console.error('Form validation failed.');
-        }
+                } else {
+                    console.error('Form validation failed.');
+                }
 
-    } catch (error) {
-        // Display error alert
-        const alertContainer = document.getElementById('alertContainer');
-        alertContainer.innerHTML = `
+            } catch (error) {
+                // Display error alert
+                const alertContainer = document.getElementById('alertContainer');
+                alertContainer.innerHTML = `
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 An error occurred while submitting the travel plan.
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>`;
 
-        // Log the error
-        console.error('API Error:', error.response ? error.response.data : error);
-    }
-},
+                // Log the error
+                console.error('API Error:', error.response ? error.response.data : error);
+            }
+        },
         clearForm() {
             // Reset the travel object to its initial state (adjust as needed for your form structure)
             this.travel = {
+                title: '',
+                description: '',
+                date: '',
+                notes: '',
                 locations: [],
-                // Reset other fields if necessary
+                foods: [],
+                facts: [],
+                images: []
             };
 
             // Optionally, if you're using a form element, you can reset it
@@ -168,7 +177,18 @@ export default {
         },
         removeFact(index) {
             this.travel.facts.splice(index, 1);
-        }
+        },
+        addImage(file) {
+            this.travel.images.push(file);
+        },
+        getImageUrl(file) {
+            return URL.createObjectURL(file); // Generate a URL for the file
+        },
+        removeImage(index) {
+            // Revoke the object URL before removing the image
+            URL.revokeObjectURL(this.getImageUrl(this.travel.images[index]));
+            this.travel.images.splice(index, 1); // Remove the image at the specified index
+        },
     },
 };
 </script>
@@ -176,10 +196,10 @@ export default {
 <template>
     <div class="container">
         <div class="row">
-            
+
             <form id="travelForm" @submit.prevent="submitTravel" novalidate enctype="multipart/form-data">
                 <h2 class="fw-bold">Create Travel Plan</h2>
-        
+
                 <div id="alertContainer"></div>
                 <!-- Travel Details -->
                 <div class="mb-3">
@@ -200,54 +220,70 @@ export default {
                     <label for="notes" class="form-label">Notes</label>
                     <textarea v-model="travel.notes" id="notes" class="form-control"></textarea>
                 </div>
-                
+
+                <!-- IMAGES -->
+                <div class="images mb-3">
+                    <div class="mb-3">
+                        <label for="images" class="form-label">Upload Images</label>
+                        <input type="file" id="images" class="form-control" @change="handleFileUpload" multiple />
+                        <div class="invalid-feedback">Please upload at least one image.</div>
+                    </div>
+
+                    <div v-if="travel.images.length > 0">
+                        <h3>Uploaded Images</h3>
+                        <div class="d-flex">
+                            <div v-for="(image, index) in travel.images" :key="index" class="image-preview">
+                                <img :src="getImageUrl(image)" alt="Image preview" class="img-thumbnail" />
+                                <button @click="removeImage(index)" id="remove_btn" class="btn btn-danger"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Locations -->
                 <div v-for="(location, index) in travel.locations" :key="index" class="mb-2">
                     <label :for="'location' + index" class="form-label">Location Name</label>
-    
+
                     <div :id="'location' + index" class="input-container">
                         <AddressInput v-model="location.name" />
                     </div>
 
                     <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-danger mt-2" @click="removeLocation(index)">Remove Location</button>
+                        <button type="button" class="btn btn-danger mt-2" @click="removeLocation(index)">Remove
+                            Location</button>
                     </div>
 
                     <div class="invalid-feedback">Please provide a location.</div>
                 </div>
-    
+
                 <!-- Foods -->
                 <div v-for="(food, index) in travel.foods" :key="index" class="mb-2">
                     <label :for="'food' + index" class="form-label">Food Title</label>
                     <input :id="'food' + index" v-model="food.title" class="form-control" required />
                     <div class="invalid-feedback">Please provide a food title.</div>
-    
+
                     <label :for="'foodDescription' + index" class="form-label">Description</label>
                     <textarea v-model="food.description" class="form-control"></textarea>
-                    
+
                     <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-danger mt-2" @click="removeFood(index)">Remove Food</button>
+                        <button type="button" class="btn btn-danger mt-2" @click="removeFood(index)">Remove
+                            Food</button>
                     </div>
                 </div>
-                
-    
+
                 <!-- Facts -->
                 <div v-for="(fact, index) in travel.facts" :key="index" class="mb-2">
                     <label :for="'fact' + index" class="form-label">Fact Title</label>
                     <input :id="'fact' + index" v-model="fact.title" class="form-control" required />
                     <div class="invalid-feedback">Please provide a fact title.</div>
-    
+
                     <label :for="'factDescription' + index" class="form-label mt-2">Description</label>
                     <textarea v-model="fact.description" class="form-control"></textarea>
-                    
+
                     <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-danger mt-2" @click="removeFact(index)">Remove Fact</button>
+                        <button type="button" class="btn btn-danger mt-2" @click="removeFact(index)">Remove
+                            Fact</button>
                     </div>
-                </div>
-                <div class="mb-3">
-                    <label for="images" class="form-label">Upload Images</label>
-                    <input type="file" id="images" class="form-control" @change="handleFileUpload" multiple />
-                    <div class="invalid-feedback">Please upload at least one image.</div>
                 </div>
 
                 <div class="d-flex align-items-center gap-3 mb-4">
@@ -256,7 +292,7 @@ export default {
                     <button type="button" class="btn btn-primary" @click="addFact">Add Fun Facts</button>
                     <button type="submit" class="btn btn-secondary">Submit Travel Plan</button>
                 </div>
-    
+
                 <!-- Submit Button -->
             </form>
         </div>
@@ -268,7 +304,17 @@ export default {
 
 <style scoped lang="scss">
 @use "../style/general" as *;
+.image-preview {
+    width: 200px;
+    height: auto;
+    position: relative;
+}
 
+#remove_btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
 .row {
     height: calc(100vh - $header-height - $footer-height);
     overflow-y: auto;
