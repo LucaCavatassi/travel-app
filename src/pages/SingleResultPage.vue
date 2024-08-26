@@ -19,6 +19,8 @@ export default {
 
     mounted() {
         this.fetchTravelDetail();
+        console.log(this.images);
+        
     },
 
     methods: {
@@ -181,7 +183,8 @@ export default {
                                         <p class="me-2 dropdown-item">Rating: {{ location.rating }}</p>
                                     </li>
                                     <li>
-                                        <p class="me-2 dropdown-item">Visited: {{ location.is_done == 1 ? 'Yes' : 'No' }}</p>
+                                        <p class="me-2 dropdown-item">Visited: {{ location.is_done == 1 ? 'Yes' : 'No'
+                                            }}</p>
                                     </li>
                                 </ul>
                             </div>
@@ -241,8 +244,35 @@ export default {
                 <div class="images">
                     <h3 class="fw-bold">Images</h3>
                     <div v-if="images.length">
-                        <div v-for="image in images" :key="image" class="image-container">
-                            <img :src="`http://127.0.0.1:8888/api/travel_app_be/uploads/${image}`" alt="Travel Image" />
+                        <div id="carouselExampleIndicators" class="carousel slide">
+                            <div class="carousel-indicators">
+                                <button
+                                    v-for="(image, index) in images"
+                                    :key="index"
+                                    type="button"
+                                    :data-bs-target="'#carouselExampleIndicators'"
+                                    :data-bs-slide-to="index"
+                                    :class="{ active: index === 0 }"
+                                    :aria-label="'Slide ' + (index + 1)"
+                                ></button>
+                            </div>
+                            <div class="carousel-inner">
+                                <div v-for="(image, index) in images" :key="index" class="carousel-item" :class="{ active: index === 0 }">
+                                    <img :src="`http://127.0.0.1:8888/api/travel_app_be/uploads/${image}`" alt="Travel Image" />
+                                </div>
+                            </div>
+                            <div v-if="images.length > 1">
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+                                    data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+                                    data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <p v-else>No images available</p>
@@ -254,6 +284,7 @@ export default {
 
 <style scoped lang="scss">
 @use "../style/general" as *;
+
 img {
     max-width: 100%;
     height: auto;
