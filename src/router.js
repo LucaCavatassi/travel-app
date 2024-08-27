@@ -4,6 +4,7 @@ import SingleResultPage from "./pages/SingleResultPage.vue";
 import LandingPage from "./pages/LandingPage.vue";
 import NewTravelPage from "./pages/NewTravelPage.vue";
 import TravelFormUpdate from "./pages/TravelFormUpdate.vue";
+import AddImagesPage from "./pages/AddImagesPage.vue";
 
 
 
@@ -32,6 +33,12 @@ const router = createRouter({
 			path: "/edit-travel/:slug",
 			name: "edit-form",
 			component: TravelFormUpdate,
+			props: true,
+		},
+		{
+			path: "/add-images/:slug",
+			name: "add-images",
+			component: AddImagesPage,
 			props: true,
 		},
 	],

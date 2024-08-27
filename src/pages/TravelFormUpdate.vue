@@ -195,16 +195,6 @@ export default {
                         facts: this.travel.facts,
                     };
 
-            //         const formData = new FormData();
-            // formData.append('data', JSON.stringify(payload));
-
-            // // Append images if any
-            // if (Array.isArray(this.travel.images)) {
-            //     this.travel.images.forEach((image) => {
-            //         formData.append('images[]', image, image.name);
-            //     });
-            // }
-
                     // Log payload for debugging
                     console.log('Payload:', payload);
 
@@ -330,17 +320,10 @@ export default {
                 <!-- Images -->
                 <div class="mb-2 border border-primary rounded p-4">
                     <div class="images mb-2">
-                        <div class="mb-3">
-                            <label for="images" class="form-label">Upload Images</label>
-                            <input type="file" id="images" class="form-control" @change="handleFileUpload" multiple />
-                            <div class="invalid-feedback">Please upload at least one image.</div>
-                        </div>
-
                         <div v-if="travel.images?.length > 0">
-                            <h3>Uploaded Images</h3>
+                            <h3>Delete Images</h3>
                             <div class="d-flex">
                                 <div v-for="(image, index) in travel.images" :key="index" class="image-preview">
-                                    <p>{{ image.id }}</p>
                                     <img :src="getImageUrl(image)" alt="Image preview" class="img-thumbnail" />
                                     <button @click="removeImage(index)" id="remove_btn" class="btn btn-danger"><i
                                             class="fa-solid fa-trash"></i></button>

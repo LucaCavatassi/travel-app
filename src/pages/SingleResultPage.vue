@@ -1,5 +1,6 @@
 <script>
 import axios from 'axios';
+import MapboxMapComponent from '../components/MapboxMapComponent.vue';
 
 export default {
     name: "single-result",
@@ -15,6 +16,9 @@ export default {
             images: [],
             travelIdToDelete: null,
         };
+    },
+    components: {
+        MapboxMapComponent
     },
 
     mounted() {
@@ -147,7 +151,8 @@ export default {
                     <div class="btn-info">
                         <button class="btn btn-secondary me-3"><router-link id="link"
                                 :to="{ name: 'edit-form', params: { slug: travel.slug } }">Edit
-                                travel</router-link></button>
+                                travel</router-link></button><button class="btn btn-secondary me-3"><router-link id="link"
+                                :to="{ name: 'add-images', params: { slug: travel.slug } }">Add Images</router-link></button>
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                             data-bs-target="#exampleModal">Delete travel</button>
                     </div>
@@ -167,6 +172,9 @@ export default {
                     <p class="fs-6 mb-3">{{ travel.notes }}</p>
                 </div>
 
+                <div class="col-12 col-md-8 px-0 d-block d-md-none">
+                    <MapboxMapComponent :locations="locations" />
+                </div>
                 <!-- LOCATIONS -->
                 <div class="locations">
                     <h3 class="fw-bold">Locations to visit</h3>
