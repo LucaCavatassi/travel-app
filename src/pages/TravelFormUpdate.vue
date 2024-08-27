@@ -30,41 +30,54 @@ export default {
     },
     methods: {
         handleFileUpload(event) {
-    const files = Array.from(event.target.files);
-    const validImages = files.filter(file => {
-        // Check if the file is an image
-        return file && file.type.startsWith('image/');
-    });
+            const files = Array.from(event.target.files);
+            const validImages = files.filter(file => {
+                // Check if the file is an image
+                return file && file.type.startsWith('image/');
+            });
 
-    if (validImages.length === 0) {
-        console.error('No valid images selected.');
-        return;
-    }
+            if (validImages.length === 0) {
+                console.error('No valid images selected.');
+                return;
+            }
 
-    this.travel.images.push(...validImages);
-    console.log(this.travel.images);
-},
-getImageUrl(image) {
-        // Handle the case where `image` is a File object
-        if (image instanceof File) {
-            return URL.createObjectURL(image);
-        }
+            this.travel.images.push(...validImages);
+            console.log(this.travel.images);
+        },
+        getImageUrl(image) {
+            // Handle the case where `image` is a File object
+            if (image instanceof File) {
+                return URL.createObjectURL(image);
+            }
 
-        // Handle the case where `image` is an object with `image_url` property
-        if (typeof image === 'object' && image !== null && image.image_url) {
-            return `http://localhost:8888/api/travel_app_be/uploads/${image.image_url}`;
-        }
+            // Handle the case where `image` is an object with `image_url` property
+            if (typeof image === 'object' && image !== null && image.image_url) {
+                return `http://localhost:8888/api/travel_app_be/uploads/${image.image_url}`;
+            }
 
-        // Handle unexpected types
-        console.error('Unexpected image type:', image);
-        return '';
-    },
+            // Handle unexpected types
+            console.error('Unexpected image type:', image);
+            return '';
+        },
         removeImage(index) {
+
+            const imageName = this.travel.images[index].image_url;
+
             // Log the URL to be removed for debugging purposes
             console.log('Removing image:', this.travel.images[index].image_url);
 
             // Remove the image at the specified index
             this.travel.images.splice(index, 1);
+            // Send an AJAX POST request to the server to remove the image
+            axios.post('http://localhost:8888/api/travel_app_be/remove_image.php', new URLSearchParams({
+                image: imageName
+            }))
+                .then(response => {
+                    console.log('Server response:', response.data);
+                })
+                .catch(error => {
+                    console.error('Error removing image:', error);
+                });
         },
         async fetchTravelDetail() {
             try {
@@ -311,6 +324,7 @@ getImageUrl(image) {
                             <h3>Uploaded Images</h3>
                             <div class="d-flex">
                                 <div v-for="(image, index) in travel.images" :key="index" class="image-preview">
+                                    <p>{{ image.id }}</p>
                                     <img :src="getImageUrl(image)" alt="Image preview" class="img-thumbnail" />
                                     <button @click="removeImage(index)" id="remove_btn" class="btn btn-danger"><i
                                             class="fa-solid fa-trash"></i></button>
