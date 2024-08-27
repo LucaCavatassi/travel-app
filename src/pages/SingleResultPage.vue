@@ -172,7 +172,8 @@ export default {
                     <p class="fs-6 mb-3">{{ travel.notes }}</p>
                 </div>
 
-                <div class="col-12 col-md-8 px-0 d-block d-md-none">
+                <div class="col-12 col-md-8 px-0 d-block">
+                    <h3 class="fw-bold">Map</h3>
                     <MapboxMapComponent :locations="locations" />
                 </div>
                 <!-- LOCATIONS -->
