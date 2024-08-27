@@ -177,75 +177,82 @@ export default {
             }
         },
         async submitTravel() {
-    try {
-        // Perform geocoding for locations
-        const geocodePromises = this.travel.locations.map((location, index) => this.geocodeLocation(location, index));
-        await Promise.all(geocodePromises);
+            try {
+                // Perform geocoding for locations
+                const geocodePromises = this.travel.locations.map((location, index) => this.geocodeLocation(location, index));
+                await Promise.all(geocodePromises);
 
-        if (this.validateForm()) {
-            const payload = {
-                id: this.travel.id,
-                title: this.travel.title,
-                description: this.travel.description,
-                date: this.travel.date,
-                notes: this.travel.notes,
-                locations: this.travel.locations,
-                foods: this.travel.foods,
-                facts: this.travel.facts
-            };
 
-            // Handle image uploads separately if needed
-            if (Array.isArray(this.travel.images) && this.travel.images.length > 0) {
-                // Convert images to Base64 or another format if necessary
-                // payload.images = await this.convertImagesToBase64(this.travel.images);
-            }
+                if (this.validateForm()) {
+                    const payload = {
+                        id: this.travel.id,
+                        title: this.travel.title,
+                        description: this.travel.description,
+                        date: this.travel.date,
+                        notes: this.travel.notes,
+                        locations: this.travel.locations,
+                        foods: this.travel.foods,
+                        facts: this.travel.facts,
+                    };
 
-            // Log payload for debugging
-            console.log('Payload:', payload);
+            //         const formData = new FormData();
+            // formData.append('data', JSON.stringify(payload));
 
-            // Make the API request
-            const response = await axios.put('http://127.0.0.1:8888/api/travel_app_be/db_connect.php', payload, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+            // // Append images if any
+            // if (Array.isArray(this.travel.images)) {
+            //     this.travel.images.forEach((image) => {
+            //         formData.append('images[]', image, image.name);
+            //     });
+            // }
 
-            // Check for successful response
-            if (response.data.success) {
-                const alertContainer = document.getElementById('alertContainer');
-                alertContainer.innerHTML = `
+                    // Log payload for debugging
+                    console.log('Payload:', payload);
+
+                    // Make the API request
+                    const response = await axios.put('http://127.0.0.1:8888/api/travel_app_be/db_connect.php', payload, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    // Check for successful response
+                    if (response.data.success) {
+                        const alertContainer = document.getElementById('alertContainer');
+                        alertContainer.innerHTML = `
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         Travel plan submitted successfully!
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>`;
 
-                console.log('Response:', response.data);
+                        console.log('Response:', response.data);
 
-                this.clearForm();
-                const slug = response.data.slug;
-                this.$router.push({ name: 'single-result', params: { slug: slug } });
-            } else {
-                console.error('API Error:', response.data);
-                throw new Error('Travel update failed.');
-            }
-        } else {
-            console.error('Form validation failed.');
-        }
-    } catch (error) {
-        const alertContainer = document.getElementById('alertContainer');
-        alertContainer.innerHTML = `
+                        this.clearForm();
+                        const slug = response.data.slug;
+                        this.$router.push({ name: 'single-result', params: { slug: slug } });
+                    } else {
+                        console.error('API Error:', response.data);
+                        throw new Error('Travel update failed.');
+                    }
+                } else {
+                    console.error('Form validation failed.');
+                }
+            } catch (error) {
+                const alertContainer = document.getElementById('alertContainer');
+                alertContainer.innerHTML = `
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 An error occurred while submitting the travel plan. Please try again.
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>`;
 
-        console.error('API Error:', error.response ? error.response.data : error.message);
-    }
-},
+                console.error('API Error:', error.response ? error.response.data : error.message);
+            }
+        },
         clearForm() {
             // Reset the travel object to its initial state (adjust as needed for your form structure)
             this.travel = {
                 locations: [],
+                foods: [],
+                facts: []
                 // Reset other fields if necessary
             };
 
