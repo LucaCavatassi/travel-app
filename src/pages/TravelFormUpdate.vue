@@ -25,7 +25,7 @@ export default {
     },
     created() {
         this.fetchTravelDetail();
-        console.log(this.travel.images);
+        // console.log(this.travel.images);
 
     },
     methods: {
@@ -84,7 +84,7 @@ export default {
                 const slug = this.$route.params.slug;
 
                 const response = await axios.get(`http://localhost:8888/api/travel_app_be/db_connect.php?slug=${slug}`);
-                console.log(response.data[0]);
+                // console.log(response.data[0]);
 
                 this.travel = response.data[0];
 
@@ -105,7 +105,7 @@ export default {
             try {
                 const response = await axios.get(`http://localhost:8888/api/travel_app_be/db_connect.php?images=${travelId}`);
                 this.travel.images = response.data;
-                console.log(this.travel.images);
+                // console.log(this.travel.images);
             } catch (error) {
                 console.error('Error fetching images:', error);
             }
@@ -177,62 +177,71 @@ export default {
             }
         },
         async submitTravel() {
-            if (!this.validateForm()) return; // Ensure form is valid before proceeding
+    try {
+        // Perform geocoding for locations
+        const geocodePromises = this.travel.locations.map((location, index) => this.geocodeLocation(location, index));
+        await Promise.all(geocodePromises);
 
-            try {
-                // Prepare payload
-                const payload = {
-                    id: this.travel.id, // Include ID if required
-                    title: this.travel.title,
-                    description: this.travel.description,
-                    date: this.travel.date,
-                    notes: this.travel.notes,
-                    locations: this.travel.locations,
-                    foods: this.travel.foods,
-                    facts: this.travel.facts,
-                };
+        if (this.validateForm()) {
+            const payload = {
+                id: this.travel.id,
+                title: this.travel.title,
+                description: this.travel.description,
+                date: this.travel.date,
+                notes: this.travel.notes,
+                locations: this.travel.locations,
+                foods: this.travel.foods,
+                facts: this.travel.facts
+            };
 
-                // Log the payload for debugging
-                console.log('Payload to be sent:', payload);
-
-                // Send PUT request to update the travel record
-                const response = await axios.put(
-                    'http://localhost:8888/api/travel_app_be/db_connect.php',
-                    payload,  // Send as JSON object
-                    {
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    }
-                );
-
-                // Log the server response
-                console.log('Server Response:', response.data);
-
-                // Display success alert
-                const alertContainer = document.getElementById('alertContainer');
-                alertContainer.innerHTML = `
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                Travel plan updated successfully!
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>`;
-
-                // Optionally navigate back or to another page
-                this.$router.push({ name: 'landing-page' });
-
-            } catch (error) {
-                // Log detailed error information
-                console.error('API Error:', error.response ? error.response.data : error);
-
-                // Display error alert
-                const alertContainer = document.getElementById('alertContainer');
-                alertContainer.innerHTML = `
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                An error occurred while updating the travel plan.
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>`;
+            // Handle image uploads separately if needed
+            if (Array.isArray(this.travel.images) && this.travel.images.length > 0) {
+                // Convert images to Base64 or another format if necessary
+                // payload.images = await this.convertImagesToBase64(this.travel.images);
             }
-        },
+
+            // Log payload for debugging
+            console.log('Payload:', payload);
+
+            // Make the API request
+            const response = await axios.put('http://127.0.0.1:8888/api/travel_app_be/db_connect.php', payload, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            // Check for successful response
+            if (response.data.success) {
+                const alertContainer = document.getElementById('alertContainer');
+                alertContainer.innerHTML = `
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        Travel plan submitted successfully!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`;
+
+                console.log('Response:', response.data);
+
+                this.clearForm();
+                const slug = response.data.slug;
+                this.$router.push({ name: 'single-result', params: { slug: slug } });
+            } else {
+                console.error('API Error:', response.data);
+                throw new Error('Travel update failed.');
+            }
+        } else {
+            console.error('Form validation failed.');
+        }
+    } catch (error) {
+        const alertContainer = document.getElementById('alertContainer');
+        alertContainer.innerHTML = `
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                An error occurred while submitting the travel plan. Please try again.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>`;
+
+        console.error('API Error:', error.response ? error.response.data : error.message);
+    }
+},
         clearForm() {
             // Reset the travel object to its initial state (adjust as needed for your form structure)
             this.travel = {
