@@ -32,9 +32,9 @@ This web application is designed to help you plan and manage your trips efficien
 
 ### Home
 
-![Home Page](./src/assets/img/screen_1.png)
+![Home Page](./src/assets/img/screen_2.png)
 
 ### New Travel
 
-![New Travel Page](./src/assets/img/screen_2.png)
+![New Travel Page](./src/assets/img/screen_1.png)
 
