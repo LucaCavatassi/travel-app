@@ -26,3 +26,15 @@ This web application is designed to help you plan and manage your trips efficien
 2. Install necessary dependencies and run the application locally or on a server.
 3. Start planning your trip by adding daily itineraries and stops.
 4. Track your progress and enjoy your journey!
+
+
+## Page Screenshots
+
+### Home
+
+![Home Page](./src/assets/img/screen_1.png)
+
+### New Travel
+
+![New Travel Page](./src/assets/img/screen_2.png)
+
