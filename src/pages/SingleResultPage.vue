@@ -252,7 +252,7 @@ export default {
 
                 <div class="images">
                     <h3 class="fw-bold">Images</h3>
-                    <div v-if="images.length">
+                    <div id="ms-slider" v-if="images.length">
                         <div id="carouselExampleIndicators" class="carousel slide">
                             <div class="carousel-indicators">
                                 <button
@@ -293,6 +293,11 @@ export default {
 
 <style scoped lang="scss">
 @use "../style/general" as *;
+
+#ms-slider{
+    width: 100%;
+    max-height: 700px;
+}
 
 img {
     max-width: 100%;
