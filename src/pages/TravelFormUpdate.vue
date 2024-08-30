@@ -52,7 +52,7 @@ export default {
 
             // Handle the case where `image` is an object with `image_url` property
             if (typeof image === 'object' && image !== null && image.image_url) {
-                return `http://localhost:8888/api/travel_app_be/uploads/${image.image_url}`;
+                return `https://powerful-ridge-67538-6182a975cd63.herokuapp.com/uploads/${image.image_url}`;
             }
 
             // Handle unexpected types
@@ -69,7 +69,7 @@ export default {
             // Remove the image at the specified index
             this.travel.images.splice(index, 1);
             // Send an AJAX POST request to the server to remove the image
-            axios.post('http://localhost:8888/api/travel_app_be/remove_image.php', new URLSearchParams({
+            axios.post('https://powerful-ridge-67538-6182a975cd63.herokuapp.com/remove_image.php', new URLSearchParams({
                 image: imageName
             }))
                 .then(response => {
@@ -83,7 +83,7 @@ export default {
             try {
                 const slug = this.$route.params.slug;
 
-                const response = await axios.get(`http://localhost:8888/api/travel_app_be/db_connect.php?slug=${slug}`);
+                const response = await axios.get(`https://powerful-ridge-67538-6182a975cd63.herokuapp.com/index.php?slug=${slug}`);
                 // console.log(response.data[0]);
 
                 this.travel = response.data[0];
@@ -103,7 +103,7 @@ export default {
         },
         async fetchImages(travelId) {
             try {
-                const response = await axios.get(`http://localhost:8888/api/travel_app_be/db_connect.php?images=${travelId}`);
+                const response = await axios.get(`https://powerful-ridge-67538-6182a975cd63.herokuapp.com/index.php?images=${travelId}`);
                 this.travel.images = response.data;
                 // console.log(this.travel.images);
             } catch (error) {
@@ -113,7 +113,7 @@ export default {
 
         async fetchLocations(travelId) {
             try {
-                const response = await axios.get(`http://localhost:8888/api/travel_app_be/db_connect.php?locations=${travelId}`);
+                const response = await axios.get(`https://powerful-ridge-67538-6182a975cd63.herokuapp.com/index.php?locations=${travelId}`);
                 this.travel.locations = response.data;
                 // console.log(this.locations);
 
@@ -126,7 +126,7 @@ export default {
 
         async fetchFoods(travelId) {
             try {
-                const response = await axios.get(`http://localhost:8888/api/travel_app_be/db_connect.php?foods=${travelId}`);
+                const response = await axios.get(`https://powerful-ridge-67538-6182a975cd63.herokuapp.com/index.php?foods=${travelId}`);
                 this.travel.foods = response.data;
 
             } catch (error) {
@@ -136,7 +136,7 @@ export default {
 
         async fetchFacts(travelId) {
             try {
-                const response = await axios.get(`http://localhost:8888/api/travel_app_be/db_connect.php?facts=${travelId}`);
+                const response = await axios.get(`https://powerful-ridge-67538-6182a975cd63.herokuapp.com/index.php?facts=${travelId}`);
                 this.travel.facts = response.data;
 
             } catch (error) {
@@ -199,7 +199,7 @@ export default {
                     console.log('Payload:', payload);
 
                     // Make the API request
-                    const response = await axios.put('http://127.0.0.1:8888/api/travel_app_be/db_connect.php', payload, {
+                    const response = await axios.put('https://powerful-ridge-67538-6182a975cd63.herokuapp.com/index.php', payload, {
                         headers: {
                             'Content-Type': 'application/json'
                         }

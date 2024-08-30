@@ -27,7 +27,7 @@ export default {
             try {
                 const slug = this.$route.params.slug;
 
-                const response = await axios.get(`http://localhost:8888/api/travel_app_be/db_connect.php?slug=${slug}`);
+                const response = await axios.get(`https://powerful-ridge-67538-6182a975cd63.herokuapp.com/index.php?slug=${slug}`);
                 // console.log(response.data[0]);
 
                 this.travel = response.data[0];
@@ -66,7 +66,7 @@ export default {
                     }
 
                     // Make the API request
-                    const response = await axios.post('http://127.0.0.1:8888/api/travel_app_be/add_image.php', formData, {
+                    const response = await axios.post('https://powerful-ridge-67538-6182a975cd63.herokuapp.com/add_image.php', formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
                         }

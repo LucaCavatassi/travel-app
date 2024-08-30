@@ -10,7 +10,7 @@
         <!-- Display images -->
         <div v-if="images.length">
             <div v-for="image in images" :key="image" class="image-container">
-                <img :src="`http://127.0.0.1:8888/api/travel_app_be/uploads/${image}`" alt="Travel Image" />
+                <img :src="`https://powerful-ridge-67538-6182a975cd63.herokuapp.com/uploads/${image}`" alt="Travel Image" />
                 <button @click="deleteImage(image)">Delete</button>
             </div>
         </div>
@@ -37,7 +37,7 @@ export default {
     methods: {
         async fetchImages() {
             try {
-                const response = await axios.get(`http://127.0.0.1:8888/api/travel_app_be/getImagesByTravelId.php`, {
+                const response = await axios.get(`https://powerful-ridge-67538-6182a975cd63.herokuapp.com/getImagesByTravelId.php`, {
                     params: { travel_id: this.travelId }
                 });
                 this.images = response.data;

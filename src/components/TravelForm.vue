@@ -89,7 +89,7 @@ export default {
                     }
 
                     // Make the API request
-                    const response = await axios.post('http://127.0.0.1:8888/api/travel_app_be/db_connect.php', formData, {
+                    const response = await axios.post('https://powerful-ridge-67538-6182a975cd63.herokuapp.com/index.php', formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
                         }

@@ -22,7 +22,7 @@ export default {
     methods: {
         async fetchTravels() {
             try {
-                const response = await axios.get('http://localhost:8888/api/travel_app_be/db_connect.php');
+                const response = await axios.get('https://powerful-ridge-67538-6182a975cd63.herokuapp.com/index.php');
                 console.log(response.data);
 
                 this.travels = response.data;
@@ -32,7 +32,7 @@ export default {
         },
         async fetchLocations() {
             try {
-                const response = await axios.get('http://localhost:8888/api/travel_app_be/db_connect.php?locations=all');
+                const response = await axios.get('https://powerful-ridge-67538-6182a975cd63.herokuapp.com/index.php?locations=all');
                 this.locations = response.data;
             } catch (error) {
                 console.error('Error fetching locations:', error);
