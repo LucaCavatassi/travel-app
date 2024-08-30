@@ -297,6 +297,7 @@ export default {
 #ms-slider{
     width: 100%;
     max-height: 700px;
+    
 }
 
 img {
